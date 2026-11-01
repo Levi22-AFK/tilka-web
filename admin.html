@@ -300,6 +300,41 @@
     .ed-banner { margin-bottom: 1rem; border-radius: var(--radio); border: 1px solid rgba(196,34,74,.3); }
     .ed-note { display: flex; gap: .6rem; align-items: flex-start; margin-top: 1.2rem; font-size: .88rem; color: #5b4a71; }
     .ed-note .ic { margin-top: .2rem; color: var(--color-ok); }
+
+    /* ---------- pestañas y usuarios ---------- */
+    .tabs { display: inline-flex; gap: .3rem; padding: 5px; margin-bottom: 1.2rem; border-radius: 999px; background: rgba(91,42,134,.08); }
+    .tabs button { display: inline-flex; align-items: center; gap: .45rem; border: 0; background: transparent; padding: .6rem 1.15rem; border-radius: 999px; font: 800 .9rem var(--fuente-base); color: var(--color-primario); cursor: pointer; }
+    .tabs button[aria-selected="true"] { background: var(--color-oscuro); color: var(--color-acento); }
+    .tb-user { display: inline-flex; align-items: center; gap: .5rem; font-size: .85rem; font-weight: 700; color: var(--color-texto-claro-suave); }
+    .tb-user b { color: var(--color-texto-claro); }
+    .tb-av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: .72rem; font-weight: 900; color: var(--color-oscuro); background: linear-gradient(135deg, var(--color-rojo), var(--color-acento)); }
+    .users { display: grid; gap: 1.2rem; }
+    .users-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; }
+    .users-head h2 { font-weight: 900; font-size: 1.5rem; color: var(--color-primario); }
+    .user-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; }
+    .user-card { display: grid; align-content: start; gap: .9rem; padding: 1.2rem; border-radius: 18px; border: 1px solid var(--color-borde); background: var(--color-superficie); }
+    .user-top { display: flex; align-items: center; gap: .8rem; min-width: 0; }
+    .user-av { flex: 0 0 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; color: #fff; background: linear-gradient(135deg, var(--color-morado-logo), #5A1C9C); }
+    .user-card.is-admin .user-av { background: linear-gradient(135deg, var(--color-rojo), var(--color-acento)); color: var(--color-oscuro); }
+    .user-top strong { display: block; color: var(--color-primario-oscuro); overflow-wrap: anywhere; }
+    .user-top small { display: block; color: #6b5a80; font-size: .82rem; overflow-wrap: anywhere; }
+    .badges { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; }
+    .badge { padding: .2rem .55rem; border-radius: 6px; font-size: .68rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; background: rgba(91,42,134,.1); color: var(--color-primario); }
+    .badge--admin { background: var(--color-oscuro); color: var(--color-acento); }
+    .badge--yo { background: var(--color-acento); color: var(--color-oscuro); }
+    .user-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .user-actions .hint { font-size: .8rem; color: #6b5a80; }
+    .user-actions .btn { padding: .5rem .85rem; font-size: .8rem; }
+    .note-box { display: grid; gap: .5rem; padding: 1rem 1.2rem; border-radius: 14px; background: rgba(91,42,134,.06); border: 1px solid var(--color-borde); font-size: .9rem; }
+    .note-box strong { color: var(--color-primario-oscuro); }
+    .note-box ul { list-style: disc; padding-left: 1.2rem; display: grid; gap: .3rem; }
+    .lbl-check { display: flex; gap: .6rem; align-items: flex-start; font-size: .92rem; font-weight: 600; }
+    .lbl-check input { width: 18px; height: 18px; margin-top: .2rem; accent-color: var(--color-primario); }
+    .warn-box { padding: .8rem 1rem; border-radius: 10px; background: rgba(243,145,41,.14); border: 1px solid rgba(217,104,56,.35); font-size: .88rem; font-weight: 600; color: var(--color-primario-oscuro); }
+    .checking { display: flex; align-items: center; gap: .7rem; font-weight: 700; color: var(--color-primario); }
+    .spin { width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--color-borde); border-top-color: var(--color-secundario); animation: giro .8s linear infinite; }
+    @keyframes giro { to { transform: rotate(360deg); } }
+    @media (max-width: 520px) { .tabs { display: flex; } .tabs button { flex: 1; justify-content: center; } }
   </style>
 </head>
 <body>
@@ -312,8 +347,10 @@
       </a>
       <div class="tb-right" id="tb-right" hidden>
         <button class="estado" type="button" id="estado" data-e="ok" aria-live="polite"><i aria-hidden="true"></i><span>Todo publicado</span></button>
-        <a class="tb-link" href="index.html#calendario" target="_blank" rel="noopener">Ver página pública <svg class="ic" aria-hidden="true"><use href="#c-ext"/></svg></a>
-        <button class="tb-btn" type="button" id="btn-salir"><svg class="ic" aria-hidden="true"><use href="#c-logout"/></svg>Cerrar sesión</button>
+        <span class="tb-user"><span class="tb-av" id="tb-av" aria-hidden="true"></span><span>Hola, <b id="tb-nombre"></b></span></span>
+        <a class="tb-link" href="index.html#calendario" target="_blank" rel="noopener">Ver página <svg class="ic" aria-hidden="true"><use href="#c-ext"/></svg></a>
+        <button class="tb-btn" type="button" id="btn-mipass"><svg class="ic" aria-hidden="true"><use href="#c-key"/></svg>Mi contraseña</button>
+        <button class="tb-btn" type="button" id="btn-salir"><svg class="ic" aria-hidden="true"><use href="#c-logout"/></svg>Salir</button>
       </div>
     </div>
   </header>
@@ -330,9 +367,15 @@
           <p class="kicker">Acceso restringido</p>
           <h1 id="t-login">Administrar calendario</h1>
 
-          <!-- Ingreso con contraseña (dispositivo ya configurado) -->
+          <p class="checking" id="l-cargando"><span class="spin" aria-hidden="true"></span>Comprobando el acceso…</p>
+
+          <!-- Ingreso con usuario y contraseña -->
           <form id="f-entrar" novalidate hidden>
-            <p class="lead-s">Ingresa la contraseña de este dispositivo para editar las actividades.</p>
+            <p class="lead-s">Ingresa con tu usuario y contraseña del equipo.</p>
+            <div class="field">
+              <label for="l-user">Usuario</label>
+              <input id="l-user" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+            </div>
             <div class="field">
               <label for="l-pass">Contraseña</label>
               <div class="pass">
@@ -342,12 +385,17 @@
             </div>
             <p class="form-err" id="l-err" role="alert" hidden></p>
             <button class="btn btn--dark btn--block" type="submit" id="l-btn"><svg class="ic" aria-hidden="true"><use href="#c-lock"/></svg><span>Entrar</span></button>
-            <button type="button" class="link-btn" id="btn-olvide" data-confirm="¿Seguro? Se borrará el acceso guardado en este dispositivo"><span>Olvidé mi contraseña / usar otro token</span></button>
+            <details class="box">
+              <summary>¿Olvidaste tu contraseña?</summary>
+              <p style="font-size:.9rem">Pide a un administrador del equipo que te asigne una nueva desde la sección <strong>Usuarios</strong>.</p>
+              <p style="font-size:.9rem;margin-top:.5rem">¿Eres el dueño del repositorio y no puedes entrar?
+                <button type="button" class="link-btn" id="btn-a-reset"><span>Restablecer el acceso con el token de GitHub</span></button></p>
+            </details>
           </form>
 
-          <!-- Primer ingreso en este dispositivo -->
+          <!-- Configuración inicial (cuando aún no existe acceso.json) -->
           <form id="f-config" novalidate hidden>
-            <p class="lead-s">Primera vez en este dispositivo: pega tu token de GitHub y crea una contraseña. Las siguientes veces solo te pediremos la contraseña.</p>
+            <p class="lead-s"><strong>Configuración inicial.</strong> Pega el token de GitHub del repositorio y crea tu cuenta de administrador. Después podrás crear las cuentas del resto del equipo.</p>
             <div class="field">
               <label for="c-token">Token de GitHub</label>
               <div class="pass">
@@ -355,45 +403,77 @@
                 <button type="button" class="pass-eye" data-eye="c-token" aria-label="Mostrar token" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#c-eye"/></svg></button>
               </div>
             </div>
-            <div class="form-grid">
-              <div class="field">
-                <label for="c-pass">Crea una contraseña</label>
-                <input id="c-pass" type="password" autocomplete="new-password" minlength="8" required>
-                <p class="hint">Mínimo 8 caracteres.</p>
-              </div>
-              <div class="field">
-                <label for="c-pass2">Repite la contraseña</label>
-                <input id="c-pass2" type="password" autocomplete="new-password" required>
-              </div>
-            </div>
             <details class="box" id="c-adv">
               <summary>Repositorio <span id="c-repo-txt"></span></summary>
               <div class="form-grid">
-                <div class="field"><label for="c-owner">Usuario u organización</label><input id="c-owner" autocomplete="off" spellcheck="false" placeholder="tu-usuario"></div>
+                <div class="field"><label for="c-owner">Usuario de GitHub</label><input id="c-owner" autocomplete="off" spellcheck="false" placeholder="tu-usuario"></div>
                 <div class="field"><label for="c-repo">Repositorio</label><input id="c-repo" autocomplete="off" spellcheck="false" placeholder="nombre-del-repositorio"></div>
                 <div class="field"><label for="c-branch">Rama</label><input id="c-branch" autocomplete="off" spellcheck="false" placeholder="main"></div>
-                <div class="field"><label for="c-path">Archivo de datos</label><input id="c-path" autocomplete="off" spellcheck="false" placeholder="actividades.json"><p class="hint">Junto a index.html.</p></div>
+                <div class="field"><label for="c-path">Archivo de actividades</label><input id="c-path" autocomplete="off" spellcheck="false" placeholder="actividades.json"></div>
               </div>
             </details>
+            <div class="form-grid">
+              <div class="field"><label for="c-nombre">Tu nombre</label><input id="c-nombre" maxlength="60" autocomplete="name" placeholder="Ej.: Levi Chima"></div>
+              <div class="field"><label for="c-user">Usuario</label><input id="c-user" maxlength="30" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Ej.: levi"><p class="hint">Minúsculas, números, punto o guion.</p></div>
+              <div class="field"><label for="c-pass">Contraseña</label><input id="c-pass" type="password" autocomplete="new-password"><p class="hint">Mínimo 10 caracteres.</p></div>
+              <div class="field"><label for="c-pass2">Repite la contraseña</label><input id="c-pass2" type="password" autocomplete="new-password"></div>
+            </div>
             <p class="form-err" id="c-err" role="alert" hidden></p>
-            <button class="btn btn--dark btn--block" type="submit" id="c-btn"><svg class="ic" aria-hidden="true"><use href="#c-key"/></svg><span>Verificar y entrar</span></button>
+            <button class="btn btn--dark btn--block" type="submit" id="c-btn"><svg class="ic" aria-hidden="true"><use href="#c-key"/></svg><span>Crear acceso y entrar</span></button>
             <details class="box">
               <summary>¿Cómo creo el token?</summary>
               <ol>
-                <li>En GitHub abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
-                <li>Ponle un nombre (por ejemplo «Calendario TILKA») y una fecha de vencimiento.</li>
+                <li>En GitHub abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Fine-grained tokens → Generate new token</a>.</li>
                 <li>En <em>Repository access</em> elige <strong>Only select repositories</strong> y marca solo el repositorio de la página.</li>
-                <li>En <em>Permissions → Repository permissions → Contents</em> elige <strong>Read and write</strong>.</li>
-                <li>Pulsa <em>Generate token</em>, cópialo y pégalo arriba. GitHub solo lo muestra una vez.</li>
+                <li>En <em>Permissions</em> pulsa <em>Add permissions</em>, agrega <strong>Contents</strong> y cámbialo a <strong>Read and write</strong>.</li>
+                <li>Pulsa <em>Generate token</em>, cópialo y pégalo arriba.</li>
               </ol>
             </details>
-            <p class="secure"><svg class="ic" aria-hidden="true"><use href="#c-lock"/></svg><span>El token se guarda cifrado con tu contraseña y solo en este dispositivo. Nunca se envía a otro sitio que no sea GitHub.</span></p>
           </form>
+
+          <!-- Restablecer acceso (dueño del repositorio) -->
+          <form id="f-reset" novalidate hidden>
+            <p class="lead-s"><strong>Restablecer acceso.</strong> Con un token de GitHub válido del repositorio puedes volver a crear tu cuenta de administrador.</p>
+            <p class="warn-box">Las demás cuentas dejarán de funcionar y tendrás que crearlas de nuevo desde <strong>Usuarios</strong>.</p>
+            <div class="field">
+              <label for="r-token">Token de GitHub</label>
+              <div class="pass">
+                <input id="r-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+                <button type="button" class="pass-eye" data-eye="r-token" aria-label="Mostrar token" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#c-eye"/></svg></button>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field"><label for="r-nombre">Tu nombre</label><input id="r-nombre" maxlength="60" autocomplete="name"></div>
+              <div class="field"><label for="r-user">Usuario</label><input id="r-user" maxlength="30" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+              <div class="field"><label for="r-pass">Nueva contraseña</label><input id="r-pass" type="password" autocomplete="new-password"><p class="hint">Mínimo 10 caracteres.</p></div>
+              <div class="field"><label for="r-pass2">Repite la contraseña</label><input id="r-pass2" type="password" autocomplete="new-password"></div>
+            </div>
+            <p class="form-err" id="r-err" role="alert" hidden></p>
+            <button class="btn btn--dark btn--block" type="submit" id="r-btn"><svg class="ic" aria-hidden="true"><use href="#c-key"/></svg><span>Restablecer y entrar</span></button>
+            <button type="button" class="link-btn" id="btn-volver"><span>← Volver al ingreso</span></button>
+          </form>
+
+          <!-- Token vencido -->
+          <form id="f-token" novalidate hidden>
+            <p class="lead-s"><strong>El token de GitHub del calendario venció o fue eliminado.</strong> Como administrador, pega un token nuevo; el resto del equipo podrá seguir entrando con sus mismas contraseñas.</p>
+            <div class="field">
+              <label for="t-token">Nuevo token de GitHub</label>
+              <div class="pass">
+                <input id="t-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+                <button type="button" class="pass-eye" data-eye="t-token" aria-label="Mostrar token" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#c-eye"/></svg></button>
+              </div>
+            </div>
+            <p class="form-err" id="t-err" role="alert" hidden></p>
+            <button class="btn btn--dark btn--block" type="submit" id="t-btn"><svg class="ic" aria-hidden="true"><use href="#c-key"/></svg><span>Guardar token y entrar</span></button>
+            <button type="button" class="link-btn" data-volver><span>← Volver al ingreso</span></button>
+          </form>
+
+          <p class="secure"><svg class="ic" aria-hidden="true"><use href="#c-lock"/></svg><span>Las contraseñas nunca se guardan ni se envían: solo sirven para descifrar, en tu navegador, el acceso a GitHub.</span></p>
         </div>
       </div>
     </section>
 
-    <!-- ===================== EDITOR ===================== -->
+    <!-- ===================== PANEL ===================== -->
     <section class="editor" id="vista-editor" aria-labelledby="t-editor" hidden>
       <div class="container">
         <div class="ed-head">
@@ -402,22 +482,51 @@
             <h1 id="t-editor">Calendario de actividades</h1>
             <p class="ed-sub" id="ed-sub"></p>
           </div>
-          <div class="ed-tools">
+          <div class="ed-tools" id="tools-cal">
             <button class="btn btn--line btn--sm" type="button" id="btn-recargar"><svg class="ic" aria-hidden="true"><use href="#c-refresh"/></svg>Recargar</button>
             <button class="btn btn--line btn--sm" type="button" id="btn-respaldo"><svg class="ic" aria-hidden="true"><use href="#c-download"/></svg>Descargar respaldo</button>
             <button class="btn btn--line btn--sm" type="button" id="btn-importar"><svg class="ic" aria-hidden="true"><use href="#c-upload"/></svg>Importar</button>
             <input type="file" id="file" accept=".json,application/json" hidden>
           </div>
         </div>
-        <div class="cal-banner cal-banner--warn ed-banner" id="banner-recuperar" hidden>
-          <p><strong>Hay cambios hechos en este dispositivo que no se llegaron a publicar.</strong> ¿Quieres recuperarlos?</p>
-          <div class="row">
-            <button class="btn btn--dark btn--sm" type="button" id="btn-recuperar">Recuperar y publicar</button>
-            <button class="btn btn--line btn--sm" type="button" id="btn-descartar-resp">Descartarlos</button>
+
+        <div class="tabs" role="tablist" aria-label="Secciones del panel" id="tabs">
+          <button type="button" role="tab" id="tab-cal" aria-controls="panel-cal" aria-selected="true"><svg class="ic" aria-hidden="true"><use href="#c-cal"/></svg>Calendario</button>
+          <button type="button" role="tab" id="tab-usr" aria-controls="panel-usr" aria-selected="false" hidden><svg class="ic" aria-hidden="true"><use href="#c-key"/></svg>Usuarios</button>
+        </div>
+
+        <div id="panel-cal" role="tabpanel" aria-labelledby="tab-cal">
+          <div class="cal-banner cal-banner--warn ed-banner" id="banner-recuperar" hidden>
+            <p><strong>Hay cambios hechos en este dispositivo que no se llegaron a publicar.</strong> ¿Quieres recuperarlos?</p>
+            <div class="row">
+              <button class="btn btn--dark btn--sm" type="button" id="btn-recuperar">Recuperar y publicar</button>
+              <button class="btn btn--line btn--sm" type="button" id="btn-descartar-resp">Descartarlos</button>
+            </div>
+          </div>
+          <div id="cal"></div>
+          <p class="ed-note"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg><span>Cada cambio se publica automáticamente. La página pública lo muestra en uno o dos minutos.</span></p>
+        </div>
+
+        <div id="panel-usr" role="tabpanel" aria-labelledby="tab-usr" hidden>
+          <div class="users">
+            <div class="users-head">
+              <h2>Cuentas del equipo</h2>
+              <div class="ed-tools">
+                <button class="btn btn--line btn--sm" type="button" id="btn-token"><svg class="ic" aria-hidden="true"><use href="#c-refresh"/></svg>Actualizar token de GitHub</button>
+                <button class="btn btn--accent btn--sm" type="button" id="btn-nuevo-usr"><svg class="ic" aria-hidden="true"><use href="#c-plus"/></svg>Nuevo usuario</button>
+              </div>
+            </div>
+            <div class="user-list" id="user-list"></div>
+            <div class="note-box">
+              <strong>Ten en cuenta</strong>
+              <ul>
+                <li>Crea cuentas solo para personas de confianza: cualquier cuenta puede modificar el calendario.</li>
+                <li>Al crear una cuenta, comparte la contraseña en persona o por un mensaje privado, y pide que la cambien en «Mi contraseña».</li>
+                <li>Si eliminas a alguien que ya había entrado, pulsa también <strong>Actualizar token de GitHub</strong> con un token nuevo (y borra el anterior en GitHub) para cerrarle el acceso por completo.</li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div id="cal"></div>
-        <p class="ed-note"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg><span>Cada cambio se publica automáticamente en tu repositorio. La página pública lo muestra en uno o dos minutos.</span></p>
       </div>
     </section>
   </main>
@@ -473,6 +582,71 @@
       <div class="dlg-foot">
         <button class="btn btn--line btn--sm" type="button" data-close>Cancelar</button>
         <button class="btn btn--dark btn--sm" type="submit"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg>Guardar y publicar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ventana: nuevo usuario / nueva contraseña para un usuario -->
+  <dialog class="dlg" id="dlg-usr" aria-labelledby="u-title">
+    <form id="u-form" novalidate>
+      <div class="dlg-head">
+        <h3 id="u-title">Nuevo usuario</h3>
+        <button class="dlg-x" type="button" data-close aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="#c-x"/></svg></button>
+      </div>
+      <div class="dlg-body">
+        <div class="form-grid">
+          <div class="field" data-solo-nuevo><label for="u-nombre">Nombre</label><input id="u-nombre" maxlength="60" autocomplete="off" placeholder="Ej.: Gabriela Colque"></div>
+          <div class="field" data-solo-nuevo><label for="u-user">Usuario</label><input id="u-user" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Ej.: gabriela"><p class="hint">Minúsculas, números, punto o guion.</p></div>
+          <div class="field"><label for="u-pass">Contraseña</label><input id="u-pass" type="password" autocomplete="new-password"><p class="hint">Mínimo 10 caracteres.</p></div>
+          <div class="field"><label for="u-pass2">Repite la contraseña</label><input id="u-pass2" type="password" autocomplete="new-password"></div>
+          <div class="field full" data-solo-nuevo><label class="lbl-check"><input type="checkbox" id="u-admin"> <span>Administrador: puede crear y eliminar cuentas y actualizar el token.</span></label></div>
+        </div>
+        <p class="form-err" id="u-err" role="alert" hidden style="margin-top:1rem"></p>
+      </div>
+      <div class="dlg-foot">
+        <button class="btn btn--line btn--sm" type="button" data-close>Cancelar</button>
+        <button class="btn btn--dark btn--sm" type="submit" id="u-btn"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg><span>Guardar</span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ventana: cambiar mi contraseña -->
+  <dialog class="dlg" id="dlg-pass" aria-labelledby="p-title">
+    <form id="p-form" novalidate>
+      <div class="dlg-head">
+        <h3 id="p-title">Cambiar mi contraseña</h3>
+        <button class="dlg-x" type="button" data-close aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="#c-x"/></svg></button>
+      </div>
+      <div class="dlg-body">
+        <div class="form-grid">
+          <div class="field full"><label for="p-actual">Contraseña actual</label><input id="p-actual" type="password" autocomplete="current-password"></div>
+          <div class="field"><label for="p-nueva">Nueva contraseña</label><input id="p-nueva" type="password" autocomplete="new-password"><p class="hint">Mínimo 10 caracteres.</p></div>
+          <div class="field"><label for="p-nueva2">Repite la nueva</label><input id="p-nueva2" type="password" autocomplete="new-password"></div>
+        </div>
+        <p class="form-err" id="p-err" role="alert" hidden style="margin-top:1rem"></p>
+      </div>
+      <div class="dlg-foot">
+        <button class="btn btn--line btn--sm" type="button" data-close>Cancelar</button>
+        <button class="btn btn--dark btn--sm" type="submit" id="p-btn"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg><span>Cambiar contraseña</span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ventana: actualizar token -->
+  <dialog class="dlg" id="dlg-token" aria-labelledby="k-title">
+    <form id="k-form" novalidate>
+      <div class="dlg-head">
+        <h3 id="k-title">Actualizar token de GitHub</h3>
+        <button class="dlg-x" type="button" data-close aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="#c-x"/></svg></button>
+      </div>
+      <div class="dlg-body">
+        <p style="margin-bottom:1rem;font-size:.92rem">Úsalo cuando el token vaya a vencer o si alguien que ya no debe entrar pudo haberlo usado. Nadie del equipo tendrá que cambiar su contraseña.</p>
+        <div class="field"><label for="k-token">Nuevo token</label><input id="k-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div>
+        <p class="form-err" id="k-err" role="alert" hidden style="margin-top:1rem"></p>
+      </div>
+      <div class="dlg-foot">
+        <button class="btn btn--line btn--sm" type="button" data-close>Cancelar</button>
+        <button class="btn btn--dark btn--sm" type="submit" id="k-btn"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg><span>Guardar token</span></button>
       </div>
     </form>
   </dialog>
@@ -912,196 +1086,330 @@
 
   <script>
     /* =========================================================
-       PANEL DE ADMINISTRACIÓN DEL CALENDARIO
-       Seguridad:
-       - Solo quien tiene un token de GitHub con permiso de escritura
-         en el repositorio puede publicar cambios (GitHub lo verifica).
-       - En cada dispositivo el token se guarda cifrado (AES-GCM, clave
-         derivada de la contraseña con PBKDF2) y nunca en el código.
+       PANEL DE ADMINISTRACIÓN DEL CALENDARIO — cuentas del equipo
+       Cómo funciona el acceso:
+       - El archivo acceso.json (en el repositorio) guarda el token de
+         GitHub cifrado con una "llave maestra" aleatoria (AES-GCM).
+       - Cada usuario guarda esa llave maestra cifrada con su propia
+         contraseña (PBKDF2-SHA256, 600 000 iteraciones). Sin una
+         contraseña correcta no se puede obtener el token.
+       - Las contraseñas nunca se guardan ni se envían a ningún sitio.
        ========================================================= */
     (function () {
       'use strict';
       var C = window.TilkaCal, $ = C.$, $$ = C.$$;
-      var K = { cred: 'tilka-admin-acceso', ses: 'tilka-admin-sesion', resp: 'tilka-admin-respaldo', int: 'tilka-admin-intentos' };
-      var SESION_MIN = 120, ITER = 310000;
-      var cfg = null, token = null, sha = null, items = [], actualizado = '', cal = null;
+      var K = { ses: 'tilka-admin-sesion', resp: 'tilka-admin-respaldo', int: 'tilka-admin-intentos' };
+      var ARCH_ACCESO = 'acceso.json', SESION_MIN = 120, ITER = 600000, MIN_PASS = 10;
+      var RE_USER = /^[a-z0-9][a-z0-9._-]{2,29}$/;
+
+      var cfg = null, token = null, maestra = null, maestraRaw = null, yo = null;
+      var acceso = null, accesoFresco = false;
+      var sha = null, items = [], actualizado = '', cal = null;
       var listo = false, estadoAct = 'ok', tPub = null, enCurso = false, otraVez = false, mensajes = [];
 
       /* ---------- utilidades ---------- */
       function enc(s) { return new TextEncoder().encode(s); }
+      function dec(b) { return new TextDecoder().decode(b); }
       function b64(bytes) { var bin = '', u = new Uint8Array(bytes); for (var i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(bin); }
-      function unb64(s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
-      function mostrarErr(el, msg) { el.textContent = msg; el.hidden = !msg; }
-      function ocupado(btn, si, texto) { btn.disabled = si; var s = btn.querySelector('span'); if (si) { btn._t = s.textContent; s.textContent = texto; } else if (btn._t) s.textContent = btn._t; }
-      function clave() { return cfg.owner + '/' + cfg.repo + '@' + cfg.branch + ':' + cfg.ruta; }
+      function unb64(s) { var bin = atob(s.replace(/\s/g, '')), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+      function rnd(n) { return crypto.getRandomValues(new Uint8Array(n)); }
+      function err(el, msg) { el.textContent = msg || ''; el.hidden = !msg; }
+      function ocupado(btn, si, texto) { btn.disabled = si; var s = btn.querySelector('span'); if (!s) return; if (si) { btn._t = s.textContent; s.textContent = texto; } else if (btn._t) s.textContent = btn._t; }
+      function iniciales(n) { return (n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (p) { return p.charAt(0).toUpperCase(); }).join('') || '?'; }
+      function normUser(u) { return (u || '').trim().toLowerCase(); }
+      function claveRepo() { return cfg.owner + '/' + cfg.repo + '@' + cfg.branch + ':' + cfg.ruta; }
+      function falla(msg, status) { var e = new Error(msg); e.status = status; e.msg = msg; return e; }
 
-      /* ---------- repositorio (se detecta desde la dirección de GitHub Pages) ---------- */
       function detectar() {
         var o = '', r = '', m = location.hostname.match(/^([a-z0-9-]+)\.github\.io$/i);
         if (m) { o = m[1]; var seg = location.pathname.split('/').filter(Boolean); r = (seg.length && !/\.html?$/i.test(seg[0])) ? seg[0] : o + '.github.io'; }
         return { owner: o, repo: r, branch: 'main', ruta: 'actividades.json' };
       }
 
-      /* ---------- cifrado del token ---------- */
-      function derivar(pass, salt) {
+      /* ---------- criptografía ---------- */
+      function clavePass(pass, salt) {
         return crypto.subtle.importKey('raw', enc(pass), 'PBKDF2', false, ['deriveKey']).then(function (base) {
           return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
         });
       }
-      function cifrar(texto, pass) {
-        var salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
-        return derivar(pass, salt).then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, enc(texto)); })
-          .then(function (ct) { return { v: 1, s: b64(salt), i: b64(iv), c: b64(ct) }; });
+      function importarMaestra(raw) { return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']); }
+      function cifrar(key, bytes, aad) { var iv = rnd(12); var p = { name: 'AES-GCM', iv: iv }; if (aad) p.additionalData = enc(aad); return crypto.subtle.encrypt(p, key, bytes).then(function (ct) { return { i: b64(iv), c: b64(ct) }; }); }
+      function descifrar(key, o, aad) { var p = { name: 'AES-GCM', iv: unb64(o.i) }; if (aad) p.additionalData = enc(aad); return crypto.subtle.decrypt(p, key, unb64(o.c)).then(function (b) { return new Uint8Array(b); }); }
+      function envolver(usuario, pass, raw) {
+        var salt = rnd(16);
+        return clavePass(pass, salt).then(function (k) { return cifrar(k, raw, 'tilka-usuario:' + usuario); }).then(function (o) { return { s: b64(salt), i: o.i, c: o.c }; });
       }
-      function descifrar(o, pass) {
-        return derivar(pass, unb64(o.s)).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(o.i) }, k, unb64(o.c)); })
-          .then(function (pt) { return new TextDecoder().decode(pt); });
-      }
+      function desenvolver(u, pass) { return clavePass(pass, unb64(u.s)).then(function (k) { return descifrar(k, u, 'tilka-usuario:' + u.usuario); }); }
+      function cifrarToken(tok) { return cifrar(maestra, enc(tok), 'tilka-token'); }
 
-      /* ---------- API de GitHub ---------- */
+      /* ---------- GitHub ---------- */
       function api(c, tok, ruta, opt) {
         opt = opt || {};
-        var h = { 'Authorization': 'Bearer ' + tok, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+        var h = { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+        if (tok) h['Authorization'] = 'Bearer ' + tok;
         if (opt.body) h['Content-Type'] = 'application/json';
         return fetch('https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo) + (ruta || ''), { method: opt.method || 'GET', headers: h, body: opt.body, cache: 'no-store' })
-          .then(function (r) { if (!r.ok) { var e = new Error('http'); e.status = r.status; throw e; } return r.status === 204 ? null : r.json(); });
+          .then(function (r) { if (!r.ok) throw falla('http', r.status); return r.json(); });
       }
-      function rutaArchivo() { return '/contents/' + cfg.ruta.split('/').map(encodeURIComponent).join('/'); }
+      function rutaContenido(archivo) { return '/contents/' + archivo.split('/').map(encodeURIComponent).join('/'); }
+      function dirDe(ruta) { var i = ruta.lastIndexOf('/'); return i < 0 ? '' : ruta.slice(0, i + 1); }
+      function rutaAcceso(c) { return dirDe(c.ruta) + ARCH_ACCESO; }
+      function leerArchivo(c, tok, archivo) {
+        return api(c, tok, rutaContenido(archivo) + '?ref=' + encodeURIComponent(c.branch) + '&t=' + Date.now())
+          .then(function (f) { return { sha: f.sha, texto: dec(unb64(f.content || '')) }; }, function (e) { if (e.status === 404) return null; throw e; });
+      }
+      function escribirArchivo(c, tok, archivo, texto, shaPrev, mensaje) {
+        var body = { message: mensaje, content: b64(enc(texto)), branch: c.branch };
+        if (shaPrev) body.sha = shaPrev;
+        return api(c, tok, rutaContenido(archivo), { method: 'PUT', body: JSON.stringify(body) });
+      }
       function msgError(e) {
         var s = e && e.status;
+        if (e && e.msg && !s) return e.msg;
         if (s === 401) return 'El token no es válido o ya venció.';
         if (s === 403) return 'El token no tiene permiso de escritura (Contents: Read and write) en este repositorio.';
         if (s === 404) return 'No se encontró el repositorio o la rama, o el token no tiene acceso a ese repositorio.';
-        if (s === 409 || s === 422) return 'El archivo cambió en GitHub mientras se publicaba. Vuelve a intentarlo.';
+        if (s === 409 || s === 422) return 'El archivo cambió en GitHub al mismo tiempo. Vuelve a intentarlo.';
         if (s) return 'GitHub respondió con un error (' + s + ').';
         return 'No se pudo conectar con GitHub. Revisa tu conexión a internet.';
       }
       function verificar(c, tok) {
-        return api(c, tok, '').then(function (repo) {
-          if (!repo.permissions || !repo.permissions.push) { var e = new Error('sin permiso'); e.status = 403; throw e; }
-          return repo;
-        });
+        return api(c, tok, '').then(function (repo) { if (!repo.permissions || !repo.permissions.push) throw falla('sin permiso', 403); return repo; });
       }
+      function validarAcceso(o) { return o && o.v === 1 && o.token && o.token.i && o.repo && Array.isArray(o.usuarios) ? o : null; }
 
-      /* ---------- vistas ---------- */
-      function verLogin(modo, msg) {
-        $('#vista-editor').hidden = true; $('#tb-right').hidden = true; $('#vista-login').hidden = false;
-        var cred = C.sGet(K.cred);
-        if (!modo) modo = cred && cred.c ? 'entrar' : 'config';
-        $('#f-entrar').hidden = modo !== 'entrar'; $('#f-config').hidden = modo !== 'config';
-        if (modo === 'entrar') {
-          $('#l-pass').value = ''; mostrarErr($('#l-err'), msg || '');
-          C.resetConfirm($('#f-entrar'));
-          setTimeout(function () { $('#l-pass').focus(); }, 50);
-        } else {
-          var d = (cred && cred.cfg) || detectar();
-          $('#c-owner').value = d.owner; $('#c-repo').value = d.repo; $('#c-branch').value = d.branch || 'main'; $('#c-path').value = d.ruta || 'actividades.json';
-          $('#c-token').value = ''; $('#c-pass').value = ''; $('#c-pass2').value = '';
-          actualizarRepoTxt(); $('#c-adv').open = !(d.owner && d.repo);
-          mostrarErr($('#c-err'), msg || '');
-          setTimeout(function () { $('#c-token').focus(); }, 50);
+      /* Lee acceso.json: primero desde la página publicada; si se pide "fresco", desde la API de GitHub */
+      function obtenerAcceso(fresco) {
+        var d = detectar();
+        function porApi() {
+          if (!d.owner) return Promise.reject(falla('sin repo'));
+          return leerArchivo(d, null, rutaAcceso(d)).then(function (f) { return f ? validarAcceso(JSON.parse(f.texto)) : null; });
         }
+        function porPagina() {
+          if (location.protocol === 'file:') return Promise.reject(falla('file'));
+          return fetch(ARCH_ACCESO + '?v=' + Date.now(), { cache: 'no-store' }).then(function (r) { if (r.status === 404) return null; if (!r.ok) throw falla('http', r.status); return r.json().then(validarAcceso); });
+        }
+        if (fresco) return porApi().catch(function () { return porPagina(); }).then(function (a) { accesoFresco = true; return a; });
+        return porPagina().then(function (a) { if (a) return a; return porApi().then(function (b) { accesoFresco = true; return b; }, function () { return null; }); }, function () { return porApi().then(function (b) { accesoFresco = true; return b; }); });
       }
-      function actualizarRepoTxt() { var o = $('#c-owner').value.trim(), r = $('#c-repo').value.trim(); $('#c-repo-txt').textContent = o && r ? '· ' + o + '/' + r : '· sin configurar'; }
-      ['#c-owner', '#c-repo'].forEach(function (s) { $(s).addEventListener('input', actualizarRepoTxt); });
 
-      /* ---------- primer ingreso ---------- */
-      $('#f-config').addEventListener('submit', function (ev) {
-        ev.preventDefault();
-        var err = $('#c-err'), btn = $('#c-btn');
-        var tok = $('#c-token').value.trim(), p1 = $('#c-pass').value, p2 = $('#c-pass2').value;
-        var c = { owner: $('#c-owner').value.trim(), repo: $('#c-repo').value.trim(), branch: $('#c-branch').value.trim() || 'main', ruta: ($('#c-path').value.trim() || 'actividades.json').replace(/^\/+/, '') };
-        if (!tok) return mostrarErr(err, 'Pega tu token de GitHub.');
-        if (p1.length < 8) return mostrarErr(err, 'La contraseña debe tener al menos 8 caracteres.');
-        if (p1 !== p2) return mostrarErr(err, 'Las contraseñas no coinciden.');
-        if (!c.owner || !c.repo) { $('#c-adv').open = true; return mostrarErr(err, 'Escribe tu usuario de GitHub y el nombre del repositorio.'); }
-        if (!window.crypto || !crypto.subtle) return mostrarErr(err, 'Este navegador no permite cifrar el token. Abre el panel desde la dirección https de tu página.');
-        mostrarErr(err, ''); ocupado(btn, true, 'Verificando…');
-        verificar(c, tok).then(function () { return cifrar(tok, p1); }).then(function (o) {
-          o.cfg = c; C.sSet(K.cred, o); C.sDel(K.int);
-          cfg = c; entrar(tok);
-        }).catch(function (e) { mostrarErr(err, msgError(e)); }).then(function () { ocupado(btn, false); });
-      });
+      /* Lee acceso.json actual (con token), aplica un cambio y lo guarda; reintenta una vez si hubo conflicto */
+      function mutarAcceso(cambiar, mensaje, tokUsar) {
+        var tok = tokUsar || token, intento = 0;
+        function ciclo() {
+          return leerArchivo(cfg, tok, rutaAcceso(cfg)).then(function (f) {
+            var actual = f ? validarAcceso(JSON.parse(f.texto)) : null;
+            if (!actual) throw falla('No se encontró acceso.json en el repositorio.');
+            return Promise.resolve(cambiar(actual)).then(function (nuevo) {
+              return escribirArchivo(cfg, tok, rutaAcceso(cfg), JSON.stringify(nuevo, null, 2) + '\n', f.sha, 'Acceso: ' + mensaje + ' (' + yo.usuario + ')').then(function () { acceso = nuevo; return nuevo; });
+            });
+          }).catch(function (e) { if ((e.status === 409 || e.status === 422) && intento++ < 1) return ciclo(); throw e; });
+        }
+        return ciclo();
+      }
 
-      /* ---------- ingreso con contraseña ---------- */
-      $('#f-entrar').addEventListener('submit', function (ev) {
-        ev.preventDefault();
-        var err = $('#l-err'), btn = $('#l-btn'), cred = C.sGet(K.cred), pass = $('#l-pass').value;
-        if (!cred) return verLogin('config');
-        var it = C.sGet(K.int) || { n: 0, hasta: 0 };
-        if (it.hasta > Date.now()) return mostrarErr(err, 'Demasiados intentos. Espera ' + Math.ceil((it.hasta - Date.now()) / 1000) + ' segundos.');
-        if (!pass) return mostrarErr(err, 'Escribe tu contraseña.');
-        mostrarErr(err, ''); ocupado(btn, true, 'Comprobando…');
-        descifrar(cred, pass).then(function (tok) {
-          C.sDel(K.int); cfg = cred.cfg;
-          return verificar(cfg, tok).then(function () { entrar(tok); }, function (e) {
-            if (e.status === 401 || e.status === 403) verLogin('config', 'El token guardado ya no sirve (' + msgError(e).toLowerCase() + ') Configura uno nuevo.');
-            else mostrarErr(err, msgError(e));
-          });
-        }, function () {
-          it.n += 1;
-          if (it.n >= 5) { it.hasta = Date.now() + Math.min(30000 * Math.pow(2, it.n - 5), 15 * 60000); }
-          C.sSet(K.int, it);
-          mostrarErr(err, it.hasta > Date.now() ? 'Contraseña incorrecta. Demasiados intentos: espera un momento.' : 'Contraseña incorrecta.');
-          $('#l-pass').select();
-        }).then(function () { ocupado(btn, false); });
-      });
-      $('#btn-olvide').addEventListener('click', function () {
-        if (!C.confirmar(this)) return;
-        C.sDel(K.cred); C.sDel(K.int); verLogin('config');
-      });
+      /* ---------- vistas de acceso ---------- */
+      var FORMS = ['#f-entrar', '#f-config', '#f-reset', '#f-token'];
+      function verForm(sel, msg) {
+        $('#vista-editor').hidden = true; $('#tb-right').hidden = true; $('#vista-login').hidden = false;
+        $('#l-cargando').hidden = sel !== null;
+        FORMS.forEach(function (f) { $(f).hidden = f !== sel; });
+        if (!sel) return;
+        var f = $(sel), e = f.querySelector('.form-err');
+        $$('input', f).forEach(function (i) { if (i.type === 'password') i.value = ''; });
+        err(e, msg || '');
+        if (sel === '#f-config') {
+          var d = detectar();
+          $('#c-owner').value = d.owner; $('#c-repo').value = d.repo; $('#c-branch').value = 'main'; $('#c-path').value = 'actividades.json';
+          repoTxt(); $('#c-adv').open = !(d.owner && d.repo);
+        }
+        setTimeout(function () { var p = f.querySelector('input:not([type=checkbox])'); if (sel === '#f-entrar' && $('#l-user').value) p = $('#l-pass'); if (p) p.focus(); }, 50);
+      }
+      function repoTxt() { var o = $('#c-owner').value.trim(), r = $('#c-repo').value.trim(); $('#c-repo-txt').textContent = o && r ? '· ' + o + '/' + r : '· sin configurar'; }
+      ['#c-owner', '#c-repo'].forEach(function (s) { $(s).addEventListener('input', repoTxt); });
       $$('[data-eye]').forEach(function (b) {
         b.addEventListener('click', function () {
           var inp = document.getElementById(b.getAttribute('data-eye')), ver = inp.type === 'password';
           inp.type = ver ? 'text' : 'password'; b.setAttribute('aria-pressed', String(ver));
-          b.setAttribute('aria-label', (ver ? 'Ocultar ' : 'Mostrar ') + (inp.id === 'c-token' ? 'token' : 'contraseña'));
         });
       });
+      $('#btn-a-reset').addEventListener('click', function () { verForm('#f-reset'); });
+      $('#btn-volver').addEventListener('click', function () { verForm('#f-entrar'); });
+      $$('[data-volver]').forEach(function (b) { b.addEventListener('click', function () { verForm('#f-entrar'); }); });
+
+      function validarCuenta(usuario, nombre, p1, p2, e) {
+        if (!nombre) return err(e, 'Escribe el nombre.'), false;
+        if (!RE_USER.test(usuario)) return err(e, 'El usuario debe tener de 3 a 30 caracteres: minúsculas, números, punto, guion o guion bajo.'), false;
+        if (p1.length < MIN_PASS) return err(e, 'La contraseña debe tener al menos ' + MIN_PASS + ' caracteres.'), false;
+        if (p1 !== p2) return err(e, 'Las contraseñas no coinciden.'), false;
+        return true;
+      }
+      function sinCrypto(e) { if (window.crypto && crypto.subtle) return false; err(e, 'Este navegador no permite el cifrado necesario. Abre el panel desde la dirección https de tu página.'); return true; }
+
+      /* Crea un acceso.json nuevo con una sola cuenta de administrador */
+      function crearAccesoNuevo(c, tok, usuario, nombre, pass) {
+        maestraRaw = rnd(32);
+        return importarMaestra(maestraRaw).then(function (k) { maestra = k; return cifrarToken(tok); }).then(function (tc) {
+          return envolver(usuario, pass, maestraRaw).then(function (w) {
+            return {
+              v: 1,
+              nota: 'Acceso cifrado al panel del calendario. No contiene contraseñas ni el token en claro.',
+              repo: c, token: tc,
+              usuarios: [{ usuario: usuario, nombre: nombre, admin: true, s: w.s, i: w.i, c: w.c, creado: new Date().toISOString() }]
+            };
+          });
+        });
+      }
+
+      /* ---------- configuración inicial ---------- */
+      $('#f-config').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var e = $('#c-err'), btn = $('#c-btn');
+        var tok = $('#c-token').value.trim(), usuario = normUser($('#c-user').value), nombre = $('#c-nombre').value.trim(), p1 = $('#c-pass').value, p2 = $('#c-pass2').value;
+        var c = { owner: $('#c-owner').value.trim(), repo: $('#c-repo').value.trim(), branch: $('#c-branch').value.trim() || 'main', ruta: ($('#c-path').value.trim() || 'actividades.json').replace(/^\/+/, '') };
+        if (!tok) return err(e, 'Pega el token de GitHub.');
+        if (!c.owner || !c.repo) { $('#c-adv').open = true; return err(e, 'Escribe tu usuario de GitHub y el nombre del repositorio.'); }
+        if (!validarCuenta(usuario, nombre, p1, p2, e) || sinCrypto(e)) return;
+        err(e, ''); ocupado(btn, true, 'Verificando…');
+        verificar(c, tok).then(function () { return leerArchivo(c, tok, rutaAcceso(c)); }).then(function (f) {
+          if (f) throw falla('Este repositorio ya tiene cuentas creadas. Vuelve al ingreso y entra con tu usuario.');
+          ocupado(btn, true, 'Creando acceso…');
+          return crearAccesoNuevo(c, tok, usuario, nombre, p1);
+        }).then(function (nuevo) {
+          cfg = c;
+          return escribirArchivo(c, tok, rutaAcceso(c), JSON.stringify(nuevo, null, 2) + '\n', null, 'Acceso: configuración inicial (' + usuario + ')').then(function () {
+            acceso = nuevo; entrar(tok, nuevo.usuarios[0]);
+          });
+        }).catch(function (x) { err(e, msgError(x)); }).then(function () { ocupado(btn, false); });
+      });
+
+      /* ---------- restablecer con el token ---------- */
+      $('#f-reset').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var e = $('#r-err'), btn = $('#r-btn');
+        var tok = $('#r-token').value.trim(), usuario = normUser($('#r-user').value), nombre = $('#r-nombre').value.trim(), p1 = $('#r-pass').value, p2 = $('#r-pass2').value;
+        var c = (acceso && acceso.repo) || detectar();
+        if (!tok) return err(e, 'Pega un token de GitHub válido.');
+        if (!c.owner) return err(e, 'No se pudo detectar el repositorio. Abre el panel desde tu página de GitHub Pages.');
+        if (!validarCuenta(usuario, nombre, p1, p2, e) || sinCrypto(e)) return;
+        err(e, ''); ocupado(btn, true, 'Verificando…');
+        verificar(c, tok).then(function () { return leerArchivo(c, tok, rutaAcceso(c)); }).then(function (f) {
+          return crearAccesoNuevo(c, tok, usuario, nombre, p1).then(function (nuevo) {
+            cfg = c;
+            return escribirArchivo(c, tok, rutaAcceso(c), JSON.stringify(nuevo, null, 2) + '\n', f && f.sha, 'Acceso: restablecido (' + usuario + ')').then(function () { acceso = nuevo; entrar(tok, nuevo.usuarios[0]); });
+          });
+        }).catch(function (x) { err(e, msgError(x)); }).then(function () { ocupado(btn, false); });
+      });
+
+      /* ---------- ingreso con usuario y contraseña ---------- */
+      $('#f-entrar').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var e = $('#l-err'), btn = $('#l-btn'), usuario = normUser($('#l-user').value), pass = $('#l-pass').value;
+        var it = C.sGet(K.int) || { n: 0, hasta: 0 };
+        if (it.hasta > Date.now()) return err(e, 'Demasiados intentos. Espera ' + Math.ceil((it.hasta - Date.now()) / 1000) + ' segundos.');
+        if (!usuario || !pass) return err(e, 'Escribe tu usuario y tu contraseña.');
+        if (sinCrypto(e)) return;
+        err(e, ''); ocupado(btn, true, 'Comprobando…');
+        function intentar(a) {
+          var u = a && a.usuarios.filter(function (x) { return x.usuario === usuario; })[0];
+          if (!u) return Promise.reject(falla('credenciales'));
+          return desenvolver(u, pass).then(function (raw) { return { a: a, u: u, raw: raw }; }, function () { throw falla('credenciales'); });
+        }
+        intentar(acceso).catch(function (x) {
+          if (x.msg !== 'credenciales' || accesoFresco) throw x;
+          return obtenerAcceso(true).then(function (a) { if (a) acceso = a; return intentar(a); });   /* por si la página aún no se actualizó */
+        }).then(function (r) {
+          C.sDel(K.int);
+          maestraRaw = r.raw; cfg = r.a.repo;
+          return importarMaestra(r.raw).then(function (k) { maestra = k; return descifrar(k, r.a.token, 'tilka-token'); }).then(function (t) {
+            var tok = dec(t);
+            return verificar(cfg, tok).then(function () { entrar(tok, r.u); }, function (x) {
+              if (x.status === 401 || x.status === 403) {
+                yo = r.u;
+                if (r.u.admin) verForm('#f-token');
+                else err(e, 'El acceso del calendario a GitHub venció. Avisa a un administrador para que lo actualice.');
+              } else throw x;
+            });
+          });
+        }).catch(function (x) {
+          if (x.msg === 'credenciales') {
+            it.n += 1; if (it.n >= 5) it.hasta = Date.now() + Math.min(30000 * Math.pow(2, it.n - 5), 15 * 60000);
+            C.sSet(K.int, it);
+            err(e, it.hasta > Date.now() ? 'Usuario o contraseña incorrectos. Demasiados intentos: espera un momento.' : 'Usuario o contraseña incorrectos.');
+            $('#l-pass').select();
+          } else err(e, msgError(x));
+        }).then(function () { ocupado(btn, false); });
+      });
+
+      /* ---------- token vencido (administrador) ---------- */
+      $('#f-token').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var e = $('#t-err'), btn = $('#t-btn'), tok = $('#t-token').value.trim();
+        if (!tok) return err(e, 'Pega el nuevo token.');
+        ocupado(btn, true, 'Verificando…');
+        actualizarToken(tok).then(function () { entrar(tok, yo); }).catch(function (x) { err(e, msgError(x)); }).then(function () { ocupado(btn, false); });
+      });
+      function actualizarToken(tok) {
+        return verificar(cfg, tok).then(function () { return cifrarToken(tok); }).then(function (tc) {
+          return mutarAcceso(function (a) { a.token = tc; return a; }, 'token actualizado', tok);
+        });
+      }
 
       /* ---------- sesión ---------- */
-      function entrar(tok) {
-        token = tok;
-        C.sSet(K.ses, { tok: tok, cfg: cfg, exp: Date.now() + SESION_MIN * 60000 }, 's');
+      function entrar(tok, u) {
+        token = tok; yo = { usuario: u.usuario, nombre: u.nombre, admin: !!u.admin };
+        C.sSet(K.ses, { tok: tok, cfg: cfg, m: b64(maestraRaw), u: yo, exp: Date.now() + SESION_MIN * 60000 }, 's');
         $('#vista-login').hidden = true; $('#vista-editor').hidden = false; $('#tb-right').hidden = false;
+        $('#tb-nombre').textContent = (yo.nombre || yo.usuario).split(/\s+/)[0];
+        $('#tb-av').textContent = iniciales(yo.nombre || yo.usuario);
+        $('#tab-usr').hidden = !yo.admin; $('#tabs').hidden = !yo.admin; if (!yo.admin) verTab('cal');
         var sub = $('#ed-sub'); sub.textContent = 'Publicando en ';
-        var code = C.mk('code', null, cfg.owner + '/' + cfg.repo); sub.appendChild(code);
-        sub.appendChild(document.createTextNode(' · rama ')); sub.appendChild(C.mk('code', null, cfg.branch));
-        sub.appendChild(document.createTextNode(' · ')); sub.appendChild(C.mk('code', null, cfg.ruta));
+        sub.appendChild(C.mk('code', null, cfg.owner + '/' + cfg.repo)); sub.appendChild(document.createTextNode(' · rama '));
+        sub.appendChild(C.mk('code', null, cfg.branch));
         if (!cal) cal = C.Calendario($('#cal'), { admin: true, pie: false, claveVista: 'tilka-admin-vista', imagenVacio: 'img/tilkayo-mascota.png', onNuevo: function (f) { if (listo) abrirForm(null, f); else C.toast('Espera a que se carguen las actividades.'); }, onAccion: accion });
         cargar();
       }
       function salir(msg) {
-        clearTimeout(tPub); token = null; sha = null; items = []; listo = false; C.sDel(K.ses, 's');
+        clearTimeout(tPub); token = null; maestra = null; maestraRaw = null; sha = null; items = []; listo = false;
+        C.sDel(K.ses, 's');
         var t = document.querySelector('.toast'); if (t) t.classList.remove('is-show');
         if (cal) cal.set([], '');
-        verLogin(null, msg);
+        $('#l-user').value = yo ? yo.usuario : '';
+        verForm('#f-entrar', msg);
       }
       $('#btn-salir').addEventListener('click', function () {
         if (estadoAct === 'pend' || estadoAct === 'saving') { C.toast('Espera un momento: se están publicando tus cambios.'); publicar(); return; }
         salir();
       });
       function renovar() { var s = C.sGet(K.ses, 's'); if (s) { s.exp = Date.now() + SESION_MIN * 60000; C.sSet(K.ses, s, 's'); } }
+      document.addEventListener('click', function () { if (token) renovar(); }, true);
       setInterval(function () { var s = C.sGet(K.ses, 's'); if (token && (!s || s.exp < Date.now()) && estadoAct === 'ok') salir('La sesión se cerró por inactividad.'); }, 60000);
 
-      /* ---------- datos ---------- */
-      function decodificar(b) { return new TextDecoder().decode(unb64(b.replace(/\s/g, ''))); }
+      /* ---------- pestañas ---------- */
+      function verTab(t) {
+        var usr = t === 'usr';
+        $('#tab-cal').setAttribute('aria-selected', String(!usr)); $('#tab-usr').setAttribute('aria-selected', String(usr));
+        $('#panel-cal').hidden = usr; $('#panel-usr').hidden = !usr; $('#tools-cal').hidden = usr;
+        $('#t-editor').textContent = usr ? 'Usuarios del panel' : 'Calendario de actividades';
+        if (usr) cargarUsuarios();
+      }
+      $('#tab-cal').addEventListener('click', function () { verTab('cal'); });
+      $('#tab-usr').addEventListener('click', function () { verTab('usr'); });
+
+      /* ---------- actividades ---------- */
       function cargar() {
         listo = false; estado('cargando');
-        api(cfg, token, rutaArchivo() + '?ref=' + encodeURIComponent(cfg.branch) + '&t=' + Date.now()).then(function (f) {
-          sha = f.sha;
-          var d = C.normalizar(JSON.parse(decodificar(f.content || '')));
-          return d;
-        }, function (e) {
-          if (e.status === 404) { sha = null; return { actualizado: '', actividades: [] }; }
-          throw e;
+        leerArchivo(cfg, token, cfg.ruta).then(function (f) {
+          sha = f ? f.sha : null;
+          return f ? C.normalizar(JSON.parse(f.texto)) : { actualizado: '', actividades: [] };
         }).then(function (d) {
           items = d.actividades; actualizado = d.actualizado; listo = true;
           cal.set(items, actualizado);
           var r = C.sGet(K.resp);
-          $('#banner-recuperar').hidden = !(r && r.repo === clave() && Array.isArray(r.items) && JSON.stringify(C.ordenar(r.items)) !== JSON.stringify(C.ordenar(items)));
+          $('#banner-recuperar').hidden = !(r && r.repo === claveRepo() && Array.isArray(r.items) && JSON.stringify(C.ordenar(r.items)) !== JSON.stringify(C.ordenar(items)));
           estado('ok');
         }).catch(function (e) {
-          if (e.status === 401) return salir('El token ya no es válido. Vuelve a ingresar o configura uno nuevo.');
+          if (e.status === 401) return salir('El acceso a GitHub venció. Vuelve a ingresar.');
           estado('error', msgError(e)); C.toast('No se pudieron cargar las actividades: ' + msgError(e), 'Reintentar', cargar, true);
         });
       }
@@ -1111,13 +1419,11 @@
         b.setAttribute('data-e', k); b.querySelector('span').textContent = t; b.title = detalle || '';
       }
       $('#estado').addEventListener('click', function () { if (estadoAct === 'error') { if (!listo) cargar(); else publicar(); } });
-
       function cambio(nuevos, desc, aviso, deshacer) {
         if (!listo) { C.toast('Espera a que se carguen las actividades desde GitHub.', null, null, true); return; }
         items = nuevos; cal.set(items, actualizado);
-        C.sSet(K.resp, { repo: clave(), items: items, t: Date.now() });
-        mensajes.push(desc); renovar();
-        estado('pend');
+        C.sSet(K.resp, { repo: claveRepo(), items: items, t: Date.now() });
+        mensajes.push(desc); estado('pend');
         clearTimeout(tPub); tPub = setTimeout(publicar, 700);
         if (aviso) C.toast(aviso, deshacer ? 'Deshacer' : null, deshacer);
       }
@@ -1128,33 +1434,25 @@
         enCurso = true; otraVez = false; estado('saving');
         var data = { actualizado: new Date().toISOString(), actividades: C.ordenar(items) };
         var texto = JSON.stringify(data, null, 2) + '\n';
-        var desc = mensajes.splice(0).join('; ').slice(0, 200) || 'actualizar actividades';
-        function put() {
-          var body = { message: 'Calendario: ' + desc, content: b64(enc(texto)), branch: cfg.branch };
-          if (sha) body.sha = sha;
-          return api(cfg, token, rutaArchivo(), { method: 'PUT', body: JSON.stringify(body) });
-        }
-        function refrescarSha() {
-          return api(cfg, token, rutaArchivo() + '?ref=' + encodeURIComponent(cfg.branch) + '&t=' + Date.now()).then(function (f) { sha = f.sha; }, function (e) { if (e.status === 404) sha = null; else throw e; });
-        }
-        put().catch(function (e) { if (e.status === 409 || e.status === 422) return refrescarSha().then(put); throw e; })
-          .then(function (r) {
-            sha = r && r.content ? r.content.sha : sha; actualizado = data.actualizado;
-            cal.set(items, actualizado);
-            if (!otraVez) C.sDel(K.resp);
-            $('#banner-recuperar').hidden = true;
-            estado(otraVez ? 'pend' : 'ok', r && r.commit ? 'Último cambio: ' + r.commit.html_url : '');
-          })
-          .catch(function (e) {
-            mensajes.unshift(desc);
-            if (e.status === 401) { estado('error'); C.toast('El token ya no es válido. Tus cambios quedaron guardados en este dispositivo.', null, null, true); return salir('El token ya no es válido. Tus cambios están guardados: al volver a entrar podrás recuperarlos.'); }
-            estado('error', msgError(e)); C.toast('No se pudo publicar: ' + msgError(e), 'Reintentar', publicar, true);
-          })
-          .then(function () { enCurso = false; if (otraVez) publicar(); });
+        var desc = mensajes.splice(0).join('; ').slice(0, 180) || 'actualizar actividades';
+        var msg = 'Calendario: ' + desc + ' (' + yo.usuario + ')';
+        escribirArchivo(cfg, token, cfg.ruta, texto, sha, msg).catch(function (e) {
+          if (e.status === 409 || e.status === 422) return leerArchivo(cfg, token, cfg.ruta).then(function (f) { sha = f ? f.sha : null; return escribirArchivo(cfg, token, cfg.ruta, texto, sha, msg); });
+          throw e;
+        }).then(function (r) {
+          sha = r && r.content ? r.content.sha : sha; actualizado = data.actualizado;
+          cal.set(items, actualizado);
+          if (!otraVez) C.sDel(K.resp);
+          $('#banner-recuperar').hidden = true;
+          estado(otraVez ? 'pend' : 'ok', r && r.commit ? 'Último cambio: ' + r.commit.html_url : '');
+        }).catch(function (e) {
+          mensajes.unshift(desc);
+          if (e.status === 401) { C.toast('El acceso a GitHub venció. Tus cambios quedaron guardados en este dispositivo.', null, null, true); return salir('El acceso a GitHub venció. Al volver a entrar podrás recuperar tus cambios.'); }
+          estado('error', msgError(e)); C.toast('No se pudo publicar: ' + msgError(e), 'Reintentar', publicar, true);
+        }).then(function () { enCurso = false; if (otraVez) publicar(); });
       }
-      window.addEventListener('beforeunload', function (e) { if (token && estadoAct !== 'ok' && estadoAct !== 'cargando') { e.preventDefault(); e.returnValue = ''; } });
+      window.addEventListener('beforeunload', function (e) { if (token && (estadoAct === 'pend' || estadoAct === 'saving' || estadoAct === 'error')) { e.preventDefault(); e.returnValue = ''; } });
 
-      /* ---------- acciones ---------- */
       function accion(k, a) {
         if (k === 'edit') abrirForm(a);
         else if (k === 'dup') { var c = C.clone(a); c.id = ''; abrirForm(c, null, true); }
@@ -1163,13 +1461,8 @@
           cambio(items.filter(function (x) { return x.id !== a.id; }), 'eliminar «' + a.titulo + '»', 'Actividad eliminada.', function () { cambio(previas, 'restaurar «' + a.titulo + '»', 'Se restauró la actividad.'); });
         }
       }
-      $('#btn-recargar').addEventListener('click', function () {
-        if (estadoAct === 'pend' || estadoAct === 'saving') return C.toast('Espera a que terminen de publicarse los cambios.');
-        cargar();
-      });
-      $('#btn-respaldo').addEventListener('click', function () {
-        C.descargar('actividades-respaldo-' + new Date().toISOString().slice(0, 10) + '.json', 'application/json', JSON.stringify({ actualizado: actualizado, actividades: C.ordenar(items) }, null, 2) + '\n');
-      });
+      $('#btn-recargar').addEventListener('click', function () { if (estadoAct === 'pend' || estadoAct === 'saving') return C.toast('Espera a que terminen de publicarse los cambios.'); cargar(); });
+      $('#btn-respaldo').addEventListener('click', function () { C.descargar('actividades-respaldo-' + new Date().toISOString().slice(0, 10) + '.json', 'application/json', JSON.stringify({ actualizado: actualizado, actividades: C.ordenar(items) }, null, 2) + '\n'); });
       $('#btn-importar').addEventListener('click', function () { $('#file').click(); });
       $('#file').addEventListener('change', function (e) {
         var f = e.target.files[0]; e.target.value = ''; if (!f) return;
@@ -1184,14 +1477,10 @@
         };
         rd.readAsText(f);
       });
-      $('#btn-recuperar').addEventListener('click', function () {
-        var r = C.sGet(K.resp); if (!r) return;
-        cambio(C.normalizar({ actividades: r.items }).actividades, 'recuperar cambios no publicados', 'Recuperando y publicando tus cambios…');
-        $('#banner-recuperar').hidden = true;
-      });
+      $('#btn-recuperar').addEventListener('click', function () { var r = C.sGet(K.resp); if (!r) return; cambio(C.normalizar({ actividades: r.items }).actividades, 'recuperar cambios no publicados', 'Recuperando y publicando tus cambios…'); $('#banner-recuperar').hidden = true; });
       $('#btn-descartar-resp').addEventListener('click', function () { C.sDel(K.resp); $('#banner-recuperar').hidden = true; });
 
-      /* ---------- formulario ---------- */
+      /* formulario de actividad */
       var dlgForm = $('#dlg-form'), editId = null;
       C.prepararDlg(dlgForm);
       C.CATS.forEach(function (c) {
@@ -1233,18 +1522,121 @@
         if (!todo && o.horaFin && !o.fechaFin && o.horaFin <= o.hora) { marcar('e-hfin', 'f-hfin', 'Debe ser posterior a la hora de inicio.'); malos.push('f-hfin'); }
         if (o.enlace && !C.RE_URL.test(o.enlace)) { marcar('e-enlace', 'f-enlace', 'El enlace debe empezar con https://'); malos.push('f-enlace'); }
         if (malos.length) { $('#' + malos[0]).focus(); return; }
-        var limpio = C.limpiar(o), previas = items, nuevos;
-        if (editId) nuevos = items.map(function (x) { return x.id === editId ? limpio : x; });
-        else nuevos = items.concat([limpio]);
-        C.cerrarDlg(dlgForm);
-        cal.ir(limpio.fecha);
+        var limpio = C.limpiar(o), previas = items;
+        var nuevos = editId ? items.map(function (x) { return x.id === editId ? limpio : x; }) : items.concat([limpio]);
+        C.cerrarDlg(dlgForm); cal.ir(limpio.fecha);
         cambio(nuevos, (editId ? 'editar «' : 'agregar «') + limpio.titulo + '»', editId ? 'Actividad actualizada.' : 'Actividad agregada.', function () { cambio(previas, 'deshacer cambio', 'Se deshizo el cambio.'); });
+      });
+
+      /* ---------- usuarios (solo administradores) ---------- */
+      var dlgUsr = $('#dlg-usr'), dlgPass = $('#dlg-pass'), dlgTok = $('#dlg-token'), usrObjetivo = null;
+      [dlgUsr, dlgPass, dlgTok].forEach(C.prepararDlg);
+      function cargarUsuarios() {
+        var box = $('#user-list'); box.textContent = ''; box.appendChild(C.mk('p', 'checking', 'Cargando cuentas…'));
+        leerArchivo(cfg, token, rutaAcceso(cfg)).then(function (f) { acceso = f ? validarAcceso(JSON.parse(f.texto)) : acceso; pintarUsuarios(); })
+          .catch(function (e) { box.textContent = ''; box.appendChild(C.mk('p', 'form-err', 'No se pudieron cargar las cuentas: ' + msgError(e))); });
+      }
+      function pintarUsuarios() {
+        var box = $('#user-list'); box.textContent = '';
+        var admins = acceso.usuarios.filter(function (u) { return u.admin; }).length;
+        acceso.usuarios.slice().sort(function (a, b) { return (b.admin - a.admin) || a.usuario.localeCompare(b.usuario); }).forEach(function (u) {
+          var card = C.mk('article', 'user-card' + (u.admin ? ' is-admin' : ''));
+          var top = C.mk('div', 'user-top'); top.appendChild(C.mk('span', 'user-av', iniciales(u.nombre || u.usuario)));
+          var t = C.mk('div'); t.appendChild(C.mk('strong', null, u.nombre || u.usuario)); t.appendChild(C.mk('small', null, '@' + u.usuario + (u.creado ? ' · desde ' + C.fechaHora(u.creado).split(',')[0] : '')));
+          top.appendChild(t); card.appendChild(top);
+          var bd = C.mk('div', 'badges'); bd.appendChild(C.mk('span', 'badge' + (u.admin ? ' badge--admin' : ''), u.admin ? 'Administrador' : 'Editor'));
+          var esYo = u.usuario === yo.usuario; if (esYo) bd.appendChild(C.mk('span', 'badge badge--yo', 'Tú'));
+          card.appendChild(bd);
+          var ac = C.mk('div', 'user-actions');
+          function boton(txt, cls, fn, conf) { var b = C.mk('button', 'btn btn--sm ' + cls); b.type = 'button'; var s = C.mk('span', null, txt); b.appendChild(s); if (conf) b.setAttribute('data-confirm', conf); b.addEventListener('click', function () { fn(b); }); ac.appendChild(b); return b; }
+          if (!esYo) boton('Nueva contraseña', 'btn--line', function () { abrirUsr(u); });
+          if (!esYo && !(u.admin && admins <= 1)) boton(u.admin ? 'Quitar administrador' : 'Hacer administrador', 'btn--line', function (b) {
+            ocupado(b, true, 'Guardando…');
+            mutarAcceso(function (a) { a.usuarios.forEach(function (x) { if (x.usuario === u.usuario) x.admin = !x.admin; }); if (!a.usuarios.some(function (x) { return x.admin; })) throw falla('Debe quedar al menos un administrador.'); return a; }, (u.admin ? 'quitar administrador a ' : 'hacer administrador a ') + u.usuario)
+              .then(function () { pintarUsuarios(); C.toast('Rol actualizado.'); }).catch(function (e) { ocupado(b, false); C.toast(msgError(e), null, null, true); });
+          });
+          if (!esYo) boton('Eliminar', 'btn--line', function (b) {
+            if (!C.confirmar(b)) return;
+            ocupado(b, true, 'Eliminando…');
+            mutarAcceso(function (a) { a.usuarios = a.usuarios.filter(function (x) { return x.usuario !== u.usuario; }); if (!a.usuarios.some(function (x) { return x.admin; })) throw falla('Debe quedar al menos un administrador.'); return a; }, 'eliminar a ' + u.usuario)
+              .then(function () { pintarUsuarios(); C.toast('Se eliminó la cuenta @' + u.usuario + '.'); }).catch(function (e) { ocupado(b, false); C.toast(msgError(e), null, null, true); });
+          }, '¿Seguro? Eliminar');
+          if (esYo) ac.appendChild(C.mk('span', 'hint', 'Cambia tu contraseña en «Mi contraseña».'));
+          card.appendChild(ac); box.appendChild(card);
+        });
+      }
+      function abrirUsr(u) {
+        usrObjetivo = u || null;
+        $('#u-title').textContent = u ? 'Nueva contraseña para @' + u.usuario : 'Nuevo usuario';
+        $$('[data-solo-nuevo]', dlgUsr).forEach(function (e) { e.hidden = !!u; });
+        $('#u-form').reset(); err($('#u-err'), '');
+        C.abrirDlg(dlgUsr); setTimeout(function () { (u ? $('#u-pass') : $('#u-nombre')).focus(); }, 30);
+      }
+      $('#btn-nuevo-usr').addEventListener('click', function () { abrirUsr(null); });
+      $('#u-form').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var e = $('#u-err'), btn = $('#u-btn'), p1 = $('#u-pass').value, p2 = $('#u-pass2').value;
+        var usuario = usrObjetivo ? usrObjetivo.usuario : normUser($('#u-user').value), nombre = usrObjetivo ? usrObjetivo.nombre : $('#u-nombre').value.trim(), esAdmin = usrObjetivo ? usrObjetivo.admin : $('#u-admin').checked;
+        if (!validarCuenta(usuario, nombre || usuario, p1, p2, e)) return;
+        if (!usrObjetivo && !nombre) return err(e, 'Escribe el nombre.');
+        err(e, ''); ocupado(btn, true, 'Guardando…');
+        envolver(usuario, p1, maestraRaw).then(function (w) {
+          return mutarAcceso(function (a) {
+            var ex = a.usuarios.filter(function (x) { return x.usuario === usuario; })[0];
+            if (!usrObjetivo && ex) throw falla('Ya existe una cuenta con el usuario @' + usuario + '.');
+            if (usrObjetivo && !ex) throw falla('Esa cuenta ya no existe.');
+            if (ex) { ex.s = w.s; ex.i = w.i; ex.c = w.c; }
+            else a.usuarios.push({ usuario: usuario, nombre: nombre, admin: esAdmin, s: w.s, i: w.i, c: w.c, creado: new Date().toISOString() });
+            return a;
+          }, (usrObjetivo ? 'nueva contraseña para ' : 'crear cuenta ') + usuario);
+        }).then(function () {
+          C.cerrarDlg(dlgUsr); pintarUsuarios();
+          C.toast(usrObjetivo ? 'Contraseña actualizada para @' + usuario + '.' : 'Cuenta @' + usuario + ' creada. Ya puede entrar al panel.');
+        }).catch(function (x) { err(e, msgError(x)); }).then(function () { ocupado(btn, false); });
+      });
+
+      /* mi contraseña */
+      $('#btn-mipass').addEventListener('click', function () { $('#p-form').reset(); err($('#p-err'), ''); C.abrirDlg(dlgPass); setTimeout(function () { $('#p-actual').focus(); }, 30); });
+      $('#p-form').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var e = $('#p-err'), btn = $('#p-btn'), actual = $('#p-actual').value, p1 = $('#p-nueva').value, p2 = $('#p-nueva2').value;
+        if (!actual) return err(e, 'Escribe tu contraseña actual.');
+        if (p1.length < MIN_PASS) return err(e, 'La nueva contraseña debe tener al menos ' + MIN_PASS + ' caracteres.');
+        if (p1 !== p2) return err(e, 'Las contraseñas nuevas no coinciden.');
+        err(e, ''); ocupado(btn, true, 'Guardando…');
+        leerArchivo(cfg, token, rutaAcceso(cfg)).then(function (f) {
+          var a = validarAcceso(JSON.parse(f.texto)), u = a.usuarios.filter(function (x) { return x.usuario === yo.usuario; })[0];
+          if (!u) throw falla('Tu cuenta ya no existe.');
+          return desenvolver(u, actual).catch(function () { throw falla('La contraseña actual no es correcta.'); });
+        }).then(function () { return envolver(yo.usuario, p1, maestraRaw); }).then(function (w) {
+          return mutarAcceso(function (a) { a.usuarios.forEach(function (x) { if (x.usuario === yo.usuario) { x.s = w.s; x.i = w.i; x.c = w.c; } }); return a; }, 'cambio de contraseña');
+        }).then(function () { C.cerrarDlg(dlgPass); C.toast('Tu contraseña se cambió.'); })
+          .catch(function (x) { err(e, msgError(x)); }).then(function () { ocupado(btn, false); });
+      });
+
+      /* actualizar token */
+      $('#btn-token').addEventListener('click', function () { $('#k-form').reset(); err($('#k-err'), ''); C.abrirDlg(dlgTok); setTimeout(function () { $('#k-token').focus(); }, 30); });
+      $('#k-form').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var e = $('#k-err'), btn = $('#k-btn'), tok = $('#k-token').value.trim();
+        if (!tok) return err(e, 'Pega el nuevo token.');
+        ocupado(btn, true, 'Verificando…');
+        actualizarToken(tok).then(function () {
+          token = tok; var s = C.sGet(K.ses, 's'); if (s) { s.tok = tok; C.sSet(K.ses, s, 's'); }
+          C.cerrarDlg(dlgTok); C.toast('Token actualizado. Ya puedes borrar el anterior en GitHub.');
+        }).catch(function (x) { err(e, msgError(x)); }).then(function () { ocupado(btn, false); });
       });
 
       /* ---------- inicio ---------- */
       var s = C.sGet(K.ses, 's');
-      if (s && s.tok && s.cfg && s.exp > Date.now()) { cfg = s.cfg; entrar(s.tok); }
-      else { C.sDel(K.ses, 's'); verLogin(); }
+      if (s && s.tok && s.cfg && s.m && s.u && s.exp > Date.now()) {
+        cfg = s.cfg; maestraRaw = unb64(s.m);
+        importarMaestra(maestraRaw).then(function (k) { maestra = k; entrar(s.tok, s.u); }).catch(function () { C.sDel(K.ses, 's'); location.reload(); });
+      } else {
+        C.sDel(K.ses, 's'); verForm(null);
+        obtenerAcceso(false).then(function (a) { acceso = a; verForm(a ? '#f-entrar' : '#f-config'); })
+          .catch(function () { verForm('#f-config'); });
+      }
     })();
   </script>
 </body>
