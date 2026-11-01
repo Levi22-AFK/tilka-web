@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Administrar calendario · T.I.L.K.A.</title>
+  <meta name="theme-color" content="#2A1541">
+  <link rel="icon" href="img/logo-tilka.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-fondo: #F5F0EA;
+      --color-superficie: #FFFFFF;
+      --color-primario: #5B2A86;
+      --color-primario-oscuro: #2E0E52;
+      --color-secundario: #D96838;
+      --color-portada: #E05E26;
+      --color-acento: #F39129;
+      --color-rojo: #C4224A;
+      --color-morado-logo: #3A0F6E;
+      --color-texto: #2E1F45;
+      --color-oscuro: #2A1541;
+      --color-oscuro-tarjeta: #3C1F5E;
+      --color-texto-claro: #F5F0EA;
+      --color-texto-claro-suave: #D9CDE6;
+      --color-borde: #E3DCEC;
+      --color-ok: #2F7D4A;
+      --fuente-base: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --fuente-marca: 'Bowlby One', 'Montserrat', Impact, sans-serif;
+      --radio: 14px;
+      --radio-lg: 22px;
+      --ancho-max: 1220px;
+      --gutter: clamp(16px, 4vw, 48px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin: 0; min-height: 100vh; font-family: var(--fuente-base); font-size: 1rem; line-height: 1.6; color: var(--color-texto); background: var(--color-fondo); overflow-x: clip; }
+    img { max-width: 100%; height: auto; display: block; }
+    h1, h2, h3, h4 { margin: 0; line-height: 1.15; }
+    p { margin: 0; }
+    ul, ol { margin: 0; padding: 0; list-style: none; }
+    a { color: inherit; }
+    [hidden] { display: none !important; }
+    svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    :focus-visible { outline: 3px solid var(--color-acento); outline-offset: 3px; border-radius: 6px; }
+    ::selection { background: var(--color-acento); color: var(--color-oscuro); }
+    .container { width: 100%; max-width: var(--ancho-max); margin-inline: auto; padding-inline: var(--gutter); }
+    .kicker { display: inline-flex; align-items: center; gap: .7rem; font-size: .8rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--color-primario); margin-bottom: .6rem; }
+    .kicker::before { content: ""; width: 26px; height: 3px; border-radius: 3px; background: var(--color-secundario); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; padding: .95rem 1.4rem; border-radius: 999px; font-weight: 800; font-size: .95rem; text-decoration: none; transition: transform .25s, box-shadow .25s, background-color .25s, color .25s; }
+    .btn .ic { font-size: 1.1rem; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn--dark { background: var(--color-oscuro); color: var(--color-acento); box-shadow: 0 12px 24px -14px rgba(42,21,65,.9); }
+    .btn--block { width: 100%; }
+
+    /* =========================================================
+       CALENDARIO DE ACTIVIDADES
+       ========================================================= */
+    .btn--sm { padding: .62rem 1.05rem; font-size: .85rem; }
+    .btn--accent { background: var(--color-acento); color: var(--color-oscuro); }
+    .btn--accent:hover { background: var(--color-secundario); }
+    .btn--line { background: var(--color-superficie); color: var(--color-primario); box-shadow: inset 0 0 0 1.5px rgba(91,42,134,.35); border: 0; }
+    .btn--line:hover { box-shadow: inset 0 0 0 1.5px var(--color-primario); }
+    .btn--danger { background: var(--color-rojo); color: #fff; }
+    button.btn { border: 0; cursor: pointer; font-family: var(--fuente-base); }
+    button.btn:disabled { opacity: .55; cursor: progress; transform: none; }
+
+    .cal { position: relative; background: var(--color-superficie); border: 1px solid var(--color-borde); border-radius: var(--radio-lg); box-shadow: 0 30px 60px -40px rgba(42,21,65,.6); overflow: hidden; }
+    .cal:not(.is-admin) .only-admin { display: none !important; }
+    .list-row .ic-go { font-size: 1.2rem; color: var(--color-primario); }
+    .cal [hidden] { display: none !important; }
+
+    .cal-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1rem; padding: 1rem clamp(1rem, 2.5vw, 1.6rem); background: var(--color-oscuro); color: var(--color-texto-claro); }
+    .cal-nav { display: flex; align-items: center; gap: .45rem; }
+    .cal-title { min-width: 10.5ch; margin: 0 .3rem; font-weight: 900; font-size: clamp(1.2rem, 2.4vw, 1.65rem); color: var(--color-texto-claro); }
+    .cal-title::first-letter { text-transform: uppercase; }
+    .cal-ib { width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(245,240,234,.1); color: inherit; display: grid; place-items: center; cursor: pointer; font-size: 1.15rem; transition: background-color .2s, color .2s; }
+    .cal-ib:hover { background: var(--color-acento); color: var(--color-oscuro); }
+    .cal-today { height: 40px; padding: 0 1rem; border-radius: 999px; border: 1.5px solid rgba(245,240,234,.35); background: transparent; color: inherit; font: 700 .85rem var(--fuente-base); cursor: pointer; transition: border-color .2s, color .2s; }
+    .cal-today:hover { border-color: var(--color-acento); color: var(--color-acento); }
+    .cal-tools { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+    .seg { display: inline-flex; padding: 4px; border-radius: 999px; background: rgba(245,240,234,.1); }
+    .seg button { border: 0; background: transparent; color: var(--color-texto-claro-suave); font: 700 .85rem var(--fuente-base); padding: .5rem 1rem; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; }
+    .seg button[aria-pressed="true"] { background: var(--color-acento); color: var(--color-oscuro); }
+
+    .cal-filters { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; padding: .85rem clamp(1rem, 2.5vw, 1.6rem); border-bottom: 1px solid var(--color-borde); background: rgba(91,42,134,.03); }
+    .cal-filters-label { margin-right: .3rem; font-size: .72rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--color-primario); }
+    .chip { display: inline-flex; align-items: center; gap: .45rem; padding: .38rem .8rem; border-radius: 999px; border: 1.5px solid var(--color-borde); background: var(--color-superficie); font: 700 .8rem var(--fuente-base); color: var(--color-texto); cursor: pointer; transition: opacity .2s, border-color .2s; }
+    .chip i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+    .chip:hover { border-color: var(--c, var(--color-primario)); }
+    .chip[aria-pressed="false"] { opacity: .45; }
+    .chip[aria-pressed="false"] i { background: transparent; box-shadow: inset 0 0 0 2px var(--c); }
+
+    .cal-banner { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; padding: .85rem clamp(1rem, 2.5vw, 1.6rem); background: rgba(243,145,41,.16); border-bottom: 1px solid rgba(217,104,56,.35); font-size: .92rem; font-weight: 600; color: var(--color-primario-oscuro); }
+    .cal-banner p { flex: 1 1 280px; }
+    .cal-banner .row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .cal-banner--warn { background: rgba(196,34,74,.1); border-bottom-color: rgba(196,34,74,.3); }
+
+
+    .cal-body { display: grid; grid-template-columns: minmax(0, 1fr) 330px; }
+    .cal-body.is-list { grid-template-columns: minmax(0, 1fr); }
+    .cal-wd, .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .cal-wd span { padding: .7rem .3rem; text-align: center; font-size: .72rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--color-primario); border-bottom: 1px solid var(--color-borde); }
+    .cal-wd span:nth-child(n+6) { color: var(--color-secundario); }
+    .cal-cell { position: relative; min-width: 0; min-height: 116px; padding: .4rem; display: flex; flex-direction: column; gap: .28rem; border-right: 1px solid var(--color-borde); border-bottom: 1px solid var(--color-borde); cursor: pointer; transition: background-color .2s; }
+    .cal-cell:nth-child(7n) { border-right: 0; }
+    .cal-cell:hover { background: rgba(91,42,134,.04); }
+    .cal-cell.is-out { background: rgba(42,21,65,.025); }
+    .cal-cell.is-out .day-btn { opacity: .38; }
+    .cal-cell.is-sel { background: rgba(91,42,134,.07); box-shadow: inset 0 0 0 2px var(--color-primario); }
+    .day-btn { align-self: flex-start; flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; font: 800 .9rem var(--fuente-base); color: var(--color-texto); cursor: pointer; transition: background-color .2s; }
+    .day-btn:hover { background: rgba(91,42,134,.1); }
+    .cal-cell.is-today .day-btn { background: var(--color-secundario); color: var(--color-oscuro); }
+    .ev-pill { display: block; width: 100%; min-width: 0; text-align: left; border: 0; border-radius: 6px; padding: .2rem .45rem; background: var(--c); color: var(--t); font: 700 .72rem/1.35 var(--fuente-base); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: filter .2s, transform .2s; }
+    .ev-pill:hover { filter: brightness(1.12); transform: translateX(2px); }
+    .ev-pill.is-cont { opacity: .78; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+    .ev-more { align-self: flex-start; border: 0; background: none; padding: 0 .2rem; font: 800 .72rem var(--fuente-base); color: var(--color-primario); cursor: pointer; }
+    .ev-more:hover { text-decoration: underline; }
+    .ev-dots { display: none; gap: 3px; flex-wrap: wrap; justify-content: center; }
+    .ev-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+    @media (max-width: 700px) {
+      .cal-cell { min-height: 62px; padding: .3rem .1rem; align-items: center; }
+      .day-btn { align-self: center; width: 32px; height: 32px; font-size: .85rem; }
+      .ev-pill, .ev-more { display: none; }
+      .ev-dots { display: flex; }
+      .cal-wd span { letter-spacing: .04em; font-size: .68rem; }
+    }
+
+    .cal-side { display: flex; flex-direction: column; gap: 1.5rem; padding: 1.3rem; border-left: 1px solid var(--color-borde); background: linear-gradient(180deg, rgba(217,104,56,.06), rgba(217,104,56,0) 45%); }
+    .side-h { font-size: .72rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--color-secundario); margin-bottom: .2rem; }
+    .side-date { font-weight: 900; font-size: 1.25rem; line-height: 1.2; color: var(--color-primario); margin-bottom: .8rem; }
+    .side-date::first-letter { text-transform: uppercase; }
+    .ev-stack { display: grid; gap: .55rem; }
+    .ev-card { display: grid; grid-template-columns: 4px minmax(0, 1fr); gap: .75rem; width: 100%; text-align: left; padding: .75rem .85rem .75rem .7rem; border-radius: 12px; border: 1px solid var(--color-borde); background: var(--color-superficie); font: inherit; color: inherit; cursor: pointer; transition: border-color .2s, box-shadow .2s, transform .2s; }
+    .ev-card::before { content: ""; border-radius: 4px; background: var(--c); }
+    .ev-card:hover { border-color: var(--c); box-shadow: 0 10px 22px -16px rgba(42,21,65,.6); transform: translateY(-1px); }
+    .ev-card strong { display: block; font-size: .96rem; line-height: 1.3; color: var(--color-primario-oscuro); overflow-wrap: anywhere; }
+    .ev-meta { display: flex; flex-wrap: wrap; gap: .15rem .8rem; margin-top: .3rem; font-size: .8rem; color: #5b4a71; }
+    .ev-meta span { display: inline-flex; align-items: center; gap: .3rem; }
+    .ev-meta .ic { font-size: .9rem; color: var(--color-secundario); }
+    .ev-cat { display: inline-flex; align-items: center; gap: .35rem; font-size: .7rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: var(--c); }
+    .ev-cat::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+    .side-empty { padding: 1rem; border-radius: 12px; border: 2px dashed var(--color-borde); text-align: center; font-size: .9rem; color: #6b5a80; }
+    .side-add { width: 100%; justify-content: center; margin-top: .6rem; }
+    .cal-empty { display: grid; justify-items: center; gap: .7rem; padding: 1.2rem; border-radius: 16px; background: var(--color-oscuro); color: var(--color-texto-claro-suave); text-align: center; }
+    .cal-empty img { width: 92px; }
+    .cal-empty strong { color: var(--color-acento); font-size: 1.05rem; }
+
+    .cal-list { padding: .4rem clamp(1rem, 2.5vw, 1.6rem) 1.6rem; }
+    .list-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem; padding: 1rem 0 .4rem; }
+    .check { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; font-size: .9rem; cursor: pointer; }
+    .check input { width: 18px; height: 18px; accent-color: var(--color-primario); }
+    .list-month { display: flex; align-items: center; gap: .9rem; margin: 1.5rem 0 .7rem; font-weight: 900; font-size: 1.1rem; color: var(--color-primario); }
+    .list-month::first-letter { text-transform: uppercase; }
+    .list-month::after { content: ""; flex: 1; height: 2px; background: var(--color-borde); }
+    .list-row { display: grid; grid-template-columns: 66px minmax(0, 1fr) auto; align-items: center; gap: 1rem; width: 100%; padding: .7rem; margin-bottom: .5rem; border: 1px solid var(--color-borde); border-radius: 14px; background: var(--color-superficie); text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .2s, box-shadow .2s; }
+    .list-row:hover { border-color: var(--c); box-shadow: 0 12px 24px -18px rgba(42,21,65,.6); }
+    .list-row.is-past { opacity: .6; }
+    .dbadge { border-radius: 12px; padding: .45rem 0 .5rem; background: var(--color-oscuro); color: var(--color-acento); text-align: center; box-shadow: inset 0 -4px 0 var(--c); }
+    .dbadge b { display: block; font-size: 1.55rem; font-weight: 900; line-height: 1; color: var(--color-texto-claro); }
+    .dbadge span { font-size: .66rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .list-row strong { display: block; font-size: 1.02rem; color: var(--color-primario-oscuro); overflow-wrap: anywhere; }
+    .list-row .ic-go { font-size: 1.2rem; color: var(--color-primario); }
+    @media (max-width: 560px) { .list-row { grid-template-columns: 58px minmax(0, 1fr); } .list-row .ic-go { display: none; } }
+
+    .cal-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1rem; padding: .85rem clamp(1rem, 2.5vw, 1.6rem); border-top: 1px solid var(--color-borde); background: rgba(91,42,134,.03); font-size: .82rem; color: #5b4a71; }
+    .link-btn { display: inline-flex; align-items: center; gap: .4rem; border: 0; background: none; padding: .3rem 0; font: 800 .82rem var(--fuente-base); color: var(--color-primario); cursor: pointer; }
+    .link-btn:hover { color: var(--color-secundario); }
+
+    @media (max-width: 980px) {
+      .cal-body { grid-template-columns: minmax(0, 1fr); }
+      .cal-side { border-left: 0; border-top: 1px solid var(--color-borde); }
+    }
+    @media (max-width: 560px) {
+      .cal-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+      .cal-filters::-webkit-scrollbar { display: none; }
+      .chip { flex-shrink: 0; }
+      .cal-title { white-space: nowrap; font-size: 1.15rem; }
+      .cal-bar { flex-direction: column; align-items: stretch; }
+      .cal-nav { justify-content: space-between; }
+      .cal-title { flex: 1; text-align: center; min-width: 0; }
+      .cal-tools { justify-content: space-between; }
+    }
+
+    /* Ventanas (dialog) */
+    .dlg { width: min(580px, calc(100vw - 24px)); max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: var(--radio-lg); background: var(--color-superficie); color: var(--color-texto); box-shadow: 0 40px 80px -30px rgba(42,21,65,.75); overflow: hidden; }
+    .dlg[open] { display: flex; flex-direction: column; animation: dlgIn .28s cubic-bezier(.2,.8,.2,1); }
+    .dlg::backdrop { background: rgba(42,21,65,.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+    @keyframes dlgIn { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+    .dlg form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+    .dlg-head { position: relative; flex-shrink: 0; padding: 1.3rem 1.5rem 1.1rem; border-top: 8px solid var(--c, var(--color-secundario)); border-bottom: 1px solid var(--color-borde); }
+    .dlg-head h3 { padding-right: 2.6rem; font-weight: 900; font-size: 1.35rem; line-height: 1.2; color: var(--color-primario); overflow-wrap: anywhere; }
+    .dlg-x { position: absolute; top: .9rem; right: .9rem; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(91,42,134,.08); color: var(--color-primario); font-size: 1.15rem; display: grid; place-items: center; cursor: pointer; }
+    .dlg-x:hover { background: var(--color-primario); color: #fff; }
+    .dlg-body { flex: 1; min-height: 0; overflow: auto; padding: 1.2rem 1.5rem; }
+    .dlg-foot { flex-shrink: 0; display: flex; flex-wrap: wrap; gap: .5rem; justify-content: flex-end; padding: 1rem 1.5rem 1.2rem; border-top: 1px solid var(--color-borde); background: rgba(91,42,134,.03); }
+    .dlg-foot .spacer { flex: 1; }
+    .det-list { display: grid; gap: .75rem; }
+    .det-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: .7rem; align-items: start; }
+    .det-list .ic { font-size: 1.2rem; color: var(--color-secundario); margin-top: .15rem; }
+    .det-list a { color: var(--color-primario); font-weight: 700; overflow-wrap: anywhere; }
+    .det-desc { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px dashed var(--color-borde); white-space: pre-line; overflow-wrap: anywhere; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem 1rem; }
+    .field.full { grid-column: 1 / -1; }
+    .field label, .field .lbl { display: block; margin-bottom: .35rem; font-size: .74rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--color-primario); }
+    .field input:not([type="checkbox"]), .field select, .field textarea { width: 100%; padding: .7rem .85rem; border-radius: 10px; border: 1.5px solid var(--color-borde); background: #fff; font: 500 1rem var(--fuente-base); color: var(--color-texto); transition: border-color .2s, box-shadow .2s; }
+    .field textarea { resize: vertical; min-height: 96px; }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--color-primario); box-shadow: 0 0 0 3px rgba(91,42,134,.18); }
+    .field [aria-invalid="true"] { border-color: var(--color-rojo); }
+    .field .err { margin-top: .3rem; font-size: .8rem; font-weight: 700; color: var(--color-rojo); }
+    .field .hint { margin-top: .3rem; font-size: .8rem; color: #6b5a80; }
+    .cat-pick { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .cat-pick label { margin: 0; display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .75rem; border-radius: 999px; border: 1.5px solid var(--color-borde); font-size: .8rem; letter-spacing: 0; text-transform: none; color: var(--color-texto); cursor: pointer; }
+    .cat-pick input { position: absolute; opacity: 0; pointer-events: none; }
+    .cat-pick i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+    .cat-pick input:checked + label { border-color: var(--c); background: var(--c); color: var(--t); }
+    .cat-pick input:checked + label i { background: var(--t); }
+    .cat-pick input:focus-visible + label { outline: 3px solid var(--color-acento); outline-offset: 2px; }
+    .test-out { margin-top: .4rem; font-size: .88rem; font-weight: 700; }
+    .test-out.ok { color: #2f7d4a; }
+    .test-out.bad { color: var(--color-rojo); }
+    @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } .dlg-head, .dlg-body, .dlg-foot { padding-left: 1.1rem; padding-right: 1.1rem; } }
+
+    /* Avisos */
+    .toast { position: fixed; left: 50%; bottom: 24px; z-index: 500; display: flex; align-items: center; gap: 1rem; max-width: calc(100vw - 32px); padding: .85rem 1.1rem; border-radius: 14px; background: var(--color-oscuro); color: var(--color-texto-claro); font-weight: 700; font-size: .92rem; box-shadow: 0 20px 40px -20px rgba(0,0,0,.6); transform: translate(-50%, 20px); opacity: 0; visibility: hidden; transition: opacity .25s, transform .25s, visibility .25s; }
+    .toast.is-show { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+    .toast.is-error { background: var(--color-rojo); }
+    .toast button { border: 0; background: var(--color-acento); color: var(--color-oscuro); font: 800 .82rem var(--fuente-base); padding: .4rem .8rem; border-radius: 999px; cursor: pointer; }
+    @media (prefers-reduced-motion: reduce) { .dlg[open] { animation: none; } }
+    @media print {
+      .cal-bar .cal-ib, .cal-today, .cal-tools, .cal-filters, .cal-admin, .cal-banner, .cal-foot, .side-add, .toast { display: none !important; }
+      .cal { box-shadow: none; }
+      .cal-bar, .cal-cell.is-today .day-btn, .ev-pill, .dbadge, .ev-dots i { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cal-cell { min-height: 80px; }
+    }
+    .dlg [hidden], .toast [hidden] { display: none !important; }
+
+    /* ---------- barra superior ---------- */
+    .topbar { position: sticky; top: 0; z-index: 50; background: var(--color-oscuro); color: var(--color-texto-claro); box-shadow: 0 10px 30px -20px rgba(0,0,0,.6); }
+    .topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, var(--color-morado-logo), #5A1C9C 48%, var(--color-rojo) 64%, var(--color-acento) 82%); }
+    .topbar-in { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 68px; flex-wrap: wrap; padding-block: .5rem; }
+    .tb-brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .tb-brand img { width: 40px; height: 44px; object-fit: contain; }
+    .tb-brand strong { display: block; font-family: var(--fuente-marca); font-weight: 400; font-size: 1.3rem; line-height: 1; letter-spacing: .02em; color: var(--color-acento); }
+    .tb-brand small { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-texto-claro-suave); }
+    .tb-right { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .9rem; }
+    .tb-link, .tb-btn { display: inline-flex; align-items: center; gap: .4rem; border: 0; background: none; color: var(--color-texto-claro); font: 700 .85rem var(--fuente-base); text-decoration: none; cursor: pointer; padding: .45rem .2rem; }
+    .tb-link:hover, .tb-btn:hover { color: var(--color-acento); }
+    .estado { display: inline-flex; align-items: center; gap: .5rem; padding: .4rem .85rem; border-radius: 999px; border: 0; background: rgba(245,240,234,.1); color: var(--color-texto-claro); font: 700 .8rem var(--fuente-base); cursor: default; }
+    .estado i { width: 9px; height: 9px; border-radius: 50%; background: var(--color-texto-claro-suave); }
+    .estado[data-e="ok"] i { background: #5BD08A; }
+    .estado[data-e="pend"] i, .estado[data-e="saving"] i, .estado[data-e="cargando"] i { background: var(--color-acento); animation: pulso 1s ease-in-out infinite; }
+    .estado[data-e="error"] { background: var(--color-rojo); cursor: pointer; }
+    .estado[data-e="error"] i { background: #fff; }
+    @keyframes pulso { 50% { opacity: .3; } }
+    @media (max-width: 640px) { .topbar { position: relative; } .tb-right { width: 100%; justify-content: space-between; } }
+
+    /* ---------- acceso ---------- */
+    .login { min-height: calc(100vh - 68px); display: grid; place-items: center; padding: clamp(1.5rem, 5vw, 4rem) 16px; }
+    .login-card { width: min(940px, 100%); display: grid; grid-template-columns: .85fr 1.15fr; background: var(--color-superficie); border: 1px solid var(--color-borde); border-radius: 28px; overflow: hidden; box-shadow: 0 40px 80px -50px rgba(42,21,65,.8); }
+    .login-art { position: relative; min-height: 420px; background: var(--color-oscuro); overflow: hidden; display: grid; place-items: end center; }
+    .login-art::before { content: ""; position: absolute; left: 12%; top: -10%; bottom: 30%; width: 26%; background: var(--color-portada); border-radius: 0 0 30px 30px; }
+    .login-art::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(245,240,234,.12) 1.2px, transparent 1.3px); background-size: 22px 22px; }
+    .login-art img { position: relative; z-index: 1; width: 82%; filter: drop-shadow(0 20px 30px rgba(0,0,0,.45)); }
+    .login-art .lock { position: absolute; z-index: 2; right: 1.2rem; top: 1.2rem; width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: var(--color-acento); color: var(--color-oscuro); font-size: 1.5rem; box-shadow: 0 10px 20px -10px rgba(0,0,0,.6); }
+    .login-form { padding: clamp(1.6rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; }
+    .login-form h1 { font-weight: 900; font-size: clamp(1.8rem, 3.6vw, 2.5rem); letter-spacing: -.02em; color: var(--color-primario); margin-bottom: .6rem; }
+    .lead-s { font-size: .98rem; color: #4d3d63; margin-bottom: 1.3rem; }
+    .login-form form { display: grid; gap: 1rem; }
+    .pass { position: relative; }
+    .pass input { padding-right: 3rem !important; }
+    .pass-eye { position: absolute; right: .35rem; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border: 0; border-radius: 10px; background: transparent; color: var(--color-primario); display: grid; place-items: center; cursor: pointer; font-size: 1.15rem; }
+    .pass-eye:hover { background: rgba(91,42,134,.08); }
+    .pass-eye[aria-pressed="true"] { color: var(--color-secundario); }
+    .login-form .link-btn { justify-self: center; }
+    .form-err { padding: .75rem .9rem; border-radius: 10px; background: rgba(196,34,74,.08); border: 1px solid rgba(196,34,74,.3); color: var(--color-rojo); font-size: .9rem; font-weight: 700; }
+    details.box { border: 1px solid var(--color-borde); border-radius: 12px; padding: .75rem .95rem; background: rgba(91,42,134,.03); }
+    details.box summary { cursor: pointer; font-weight: 800; font-size: .88rem; color: var(--color-primario); }
+    details.box[open] summary { margin-bottom: .8rem; }
+    details.box ol { list-style: decimal; padding-left: 1.2rem; display: grid; gap: .35rem; font-size: .88rem; }
+    details.box a { color: var(--color-primario); font-weight: 700; }
+    .secure { display: flex; gap: .6rem; align-items: flex-start; font-size: .8rem; color: #6b5a80; }
+    .secure .ic { font-size: 1rem; margin-top: .15rem; color: var(--color-ok); }
+    @media (max-width: 780px) {
+      .login-card { grid-template-columns: 1fr; }
+      .login-art { min-height: 200px; max-height: 220px; }
+      .login-art img { width: 46%; max-width: 190px; }
+    }
+
+    /* ---------- editor ---------- */
+    .editor { padding-block: clamp(1.5rem, 4vw, 2.8rem) 4rem; }
+    .ed-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem 2rem; margin-bottom: 1.4rem; }
+    .ed-head h1 { font-weight: 900; font-size: clamp(1.9rem, 4vw, 2.8rem); letter-spacing: -.02em; color: var(--color-primario); }
+    .ed-sub { margin-top: .3rem; font-size: .88rem; color: #5b4a71; }
+    .ed-sub code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; background: rgba(91,42,134,.1); padding: .1rem .4rem; border-radius: 5px; }
+    .ed-tools { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .ed-banner { margin-bottom: 1rem; border-radius: var(--radio); border: 1px solid rgba(196,34,74,.3); }
+    .ed-note { display: flex; gap: .6rem; align-items: flex-start; margin-top: 1.2rem; font-size: .88rem; color: #5b4a71; }
+    .ed-note .ic { margin-top: .2rem; color: var(--color-ok); }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container topbar-in">
+      <a class="tb-brand" href="index.html" title="Ir a la página pública">
+        <img src="img/logo-tilka.png" alt="" width="40" height="44" onerror="this.remove()">
+        <span><strong>T.I.L.K.A.</strong><small>Panel de administración</small></span>
+      </a>
+      <div class="tb-right" id="tb-right" hidden>
+        <button class="estado" type="button" id="estado" data-e="ok" aria-live="polite"><i aria-hidden="true"></i><span>Todo publicado</span></button>
+        <a class="tb-link" href="index.html#calendario" target="_blank" rel="noopener">Ver página pública <svg class="ic" aria-hidden="true"><use href="#c-ext"/></svg></a>
+        <button class="tb-btn" type="button" id="btn-salir"><svg class="ic" aria-hidden="true"><use href="#c-logout"/></svg>Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===================== ACCESO ===================== -->
+    <section class="login" id="vista-login" aria-labelledby="t-login">
+      <div class="login-card">
+        <div class="login-art" aria-hidden="true">
+          <span class="lock"><svg class="ic"><use href="#c-lock"/></svg></span>
+          <img src="img/tilkayo-mascota.png" alt="" onerror="this.remove()">
+        </div>
+        <div class="login-form">
+          <p class="kicker">Acceso restringido</p>
+          <h1 id="t-login">Administrar calendario</h1>
+
+          <!-- Ingreso con contraseña (dispositivo ya configurado) -->
+          <form id="f-entrar" novalidate hidden>
+            <p class="lead-s">Ingresa la contraseña de este dispositivo para editar las actividades.</p>
+            <div class="field">
+              <label for="l-pass">Contraseña</label>
+              <div class="pass">
+                <input id="l-pass" type="password" autocomplete="current-password" required>
+                <button type="button" class="pass-eye" data-eye="l-pass" aria-label="Mostrar contraseña" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#c-eye"/></svg></button>
+              </div>
+            </div>
+            <p class="form-err" id="l-err" role="alert" hidden></p>
+            <button class="btn btn--dark btn--block" type="submit" id="l-btn"><svg class="ic" aria-hidden="true"><use href="#c-lock"/></svg><span>Entrar</span></button>
+            <button type="button" class="link-btn" id="btn-olvide" data-confirm="¿Seguro? Se borrará el acceso guardado en este dispositivo"><span>Olvidé mi contraseña / usar otro token</span></button>
+          </form>
+
+          <!-- Primer ingreso en este dispositivo -->
+          <form id="f-config" novalidate hidden>
+            <p class="lead-s">Primera vez en este dispositivo: pega tu token de GitHub y crea una contraseña. Las siguientes veces solo te pediremos la contraseña.</p>
+            <div class="field">
+              <label for="c-token">Token de GitHub</label>
+              <div class="pass">
+                <input id="c-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…" required>
+                <button type="button" class="pass-eye" data-eye="c-token" aria-label="Mostrar token" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#c-eye"/></svg></button>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="c-pass">Crea una contraseña</label>
+                <input id="c-pass" type="password" autocomplete="new-password" minlength="8" required>
+                <p class="hint">Mínimo 8 caracteres.</p>
+              </div>
+              <div class="field">
+                <label for="c-pass2">Repite la contraseña</label>
+                <input id="c-pass2" type="password" autocomplete="new-password" required>
+              </div>
+            </div>
+            <details class="box" id="c-adv">
+              <summary>Repositorio <span id="c-repo-txt"></span></summary>
+              <div class="form-grid">
+                <div class="field"><label for="c-owner">Usuario u organización</label><input id="c-owner" autocomplete="off" spellcheck="false" placeholder="tu-usuario"></div>
+                <div class="field"><label for="c-repo">Repositorio</label><input id="c-repo" autocomplete="off" spellcheck="false" placeholder="nombre-del-repositorio"></div>
+                <div class="field"><label for="c-branch">Rama</label><input id="c-branch" autocomplete="off" spellcheck="false" placeholder="main"></div>
+                <div class="field"><label for="c-path">Archivo de datos</label><input id="c-path" autocomplete="off" spellcheck="false" placeholder="actividades.json"><p class="hint">Junto a index.html.</p></div>
+              </div>
+            </details>
+            <p class="form-err" id="c-err" role="alert" hidden></p>
+            <button class="btn btn--dark btn--block" type="submit" id="c-btn"><svg class="ic" aria-hidden="true"><use href="#c-key"/></svg><span>Verificar y entrar</span></button>
+            <details class="box">
+              <summary>¿Cómo creo el token?</summary>
+              <ol>
+                <li>En GitHub abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
+                <li>Ponle un nombre (por ejemplo «Calendario TILKA») y una fecha de vencimiento.</li>
+                <li>En <em>Repository access</em> elige <strong>Only select repositories</strong> y marca solo el repositorio de la página.</li>
+                <li>En <em>Permissions → Repository permissions → Contents</em> elige <strong>Read and write</strong>.</li>
+                <li>Pulsa <em>Generate token</em>, cópialo y pégalo arriba. GitHub solo lo muestra una vez.</li>
+              </ol>
+            </details>
+            <p class="secure"><svg class="ic" aria-hidden="true"><use href="#c-lock"/></svg><span>El token se guarda cifrado con tu contraseña y solo en este dispositivo. Nunca se envía a otro sitio que no sea GitHub.</span></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EDITOR ===================== -->
+    <section class="editor" id="vista-editor" aria-labelledby="t-editor" hidden>
+      <div class="container">
+        <div class="ed-head">
+          <div>
+            <p class="kicker">TILKA-INFORMA · Agenda digital</p>
+            <h1 id="t-editor">Calendario de actividades</h1>
+            <p class="ed-sub" id="ed-sub"></p>
+          </div>
+          <div class="ed-tools">
+            <button class="btn btn--line btn--sm" type="button" id="btn-recargar"><svg class="ic" aria-hidden="true"><use href="#c-refresh"/></svg>Recargar</button>
+            <button class="btn btn--line btn--sm" type="button" id="btn-respaldo"><svg class="ic" aria-hidden="true"><use href="#c-download"/></svg>Descargar respaldo</button>
+            <button class="btn btn--line btn--sm" type="button" id="btn-importar"><svg class="ic" aria-hidden="true"><use href="#c-upload"/></svg>Importar</button>
+            <input type="file" id="file" accept=".json,application/json" hidden>
+          </div>
+        </div>
+        <div class="cal-banner cal-banner--warn ed-banner" id="banner-recuperar" hidden>
+          <p><strong>Hay cambios hechos en este dispositivo que no se llegaron a publicar.</strong> ¿Quieres recuperarlos?</p>
+          <div class="row">
+            <button class="btn btn--dark btn--sm" type="button" id="btn-recuperar">Recuperar y publicar</button>
+            <button class="btn btn--line btn--sm" type="button" id="btn-descartar-resp">Descartarlos</button>
+          </div>
+        </div>
+        <div id="cal"></div>
+        <p class="ed-note"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg><span>Cada cambio se publica automáticamente en tu repositorio. La página pública lo muestra en uno o dos minutos.</span></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Ventana: crear / editar actividad -->
+  <dialog class="dlg" id="dlg-form" aria-labelledby="form-title">
+    <form id="cal-form" novalidate>
+      <div class="dlg-head">
+        <h3 id="form-title">Nueva actividad</h3>
+        <button class="dlg-x" type="button" data-close aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="#c-x"/></svg></button>
+      </div>
+      <div class="dlg-body">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="f-titulo">Título *</label>
+            <input id="f-titulo" maxlength="140" required autocomplete="off" placeholder="Ej.: Reunión abierta del mes">
+            <p class="err" id="e-titulo" hidden></p>
+          </div>
+          <div class="field full">
+            <span class="lbl" id="l-cat">Tipo de actividad</span>
+            <div class="cat-pick" id="f-cats" role="radiogroup" aria-labelledby="l-cat"></div>
+          </div>
+          <div class="field">
+            <label for="f-fecha">Fecha *</label>
+            <input id="f-fecha" type="date" required>
+            <p class="err" id="e-fecha" hidden></p>
+          </div>
+          <div class="field">
+            <label for="f-fin">Hasta (opcional)</label>
+            <input id="f-fin" type="date">
+            <p class="err" id="e-fin" hidden></p>
+          </div>
+          <div class="field full"><label class="check"><input type="checkbox" id="f-todo" checked> Todo el día</label></div>
+          <div class="field" data-hora>
+            <label for="f-hora">Hora de inicio</label>
+            <input id="f-hora" type="time">
+            <p class="err" id="e-hora" hidden></p>
+          </div>
+          <div class="field" data-hora>
+            <label for="f-hfin">Hora de fin (opcional)</label>
+            <input id="f-hfin" type="time">
+            <p class="err" id="e-hfin" hidden></p>
+          </div>
+          <div class="field full"><label for="f-lugar">Lugar</label><input id="f-lugar" maxlength="140" placeholder="Ej.: Patio café-amarillo, FAADU"></div>
+          <div class="field full"><label for="f-desc">Descripción</label><textarea id="f-desc" maxlength="2000" placeholder="Detalles, requisitos, qué llevar…"></textarea></div>
+          <div class="field full">
+            <label for="f-enlace">Enlace (opcional)</label>
+            <input id="f-enlace" type="url" maxlength="300" placeholder="https://… (inscripción, convocatoria, transmisión)">
+            <p class="err" id="e-enlace" hidden></p>
+          </div>
+        </div>
+      </div>
+      <div class="dlg-foot">
+        <button class="btn btn--line btn--sm" type="button" data-close>Cancelar</button>
+        <button class="btn btn--dark btn--sm" type="submit"><svg class="ic" aria-hidden="true"><use href="#c-check"/></svg>Guardar y publicar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    /* =========================================================
+       NÚCLEO DEL CALENDARIO T.I.L.K.A. (compartido por la página
+       pública y el panel de administración)
+       ========================================================= */
+    (function (w) {
+      'use strict';
+      var CATS = [
+        { id: 'reunion',   nombre: 'Reuniones y asambleas', c: '#2A1541', t: '#FFFFFF' },
+        { id: 'academico', nombre: 'Académico y talleres',  c: '#5B2A86', t: '#FFFFFF' },
+        { id: 'cultural',  nombre: 'Cultural',              c: '#D96838', t: '#2A1541' },
+        { id: 'deportivo', nombre: 'Deportivo',             c: '#C4224A', t: '#FFFFFF' },
+        { id: 'becas',     nombre: 'Becas y oportunidades', c: '#F39129', t: '#2A1541' },
+        { id: 'espacios',  nombre: 'Espacios y gestión',    c: '#8A2A7E', t: '#FFFFFF' }
+      ];
+      var CAT = {}; CATS.forEach(function (c) { CAT[c.id] = c; });
+      var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      var DIAS = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+      var DIAS_C = ['lun','mar','mié','jue','vie','sáb','dom'];
+
+      var SPRITE = '<svg width="0" height="0" style="position:absolute" aria-hidden="true" id="tilka-cal-sprite"><defs>' +
+        '<symbol id="c-chev-l" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>' +
+        '<symbol id="c-chev-r" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>' +
+        '<symbol id="c-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>' +
+        '<symbol id="c-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>' +
+        '<symbol id="c-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>' +
+        '<symbol id="c-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>' +
+        '<symbol id="c-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>' +
+        '<symbol id="c-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>' +
+        '<symbol id="c-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>' +
+        '<symbol id="c-grid" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="10" x2="9" y2="21"/><line x1="15" y1="10" x2="15" y2="21"/></symbol>' +
+        '<symbol id="c-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></symbol>' +
+        '<symbol id="c-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>' +
+        '<symbol id="c-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>' +
+        '<symbol id="c-ext" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>' +
+        '<symbol id="c-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>' +
+        '<symbol id="c-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>' +
+        '<symbol id="c-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>' +
+        '<symbol id="c-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>' +
+        '<symbol id="c-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>' +
+        '<symbol id="c-key" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>' +
+        '<symbol id="c-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>' +
+        '</defs></svg>';
+
+      function sprite() { if (document.body && !document.getElementById('tilka-cal-sprite')) document.body.insertAdjacentHTML('afterbegin', SPRITE); }
+      sprite();
+
+      /* ---------- utilidades ---------- */
+      function $(s, el) { return (el || document).querySelector(s); }
+      function $$(s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); }
+      function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+      function icon(id, cls) { var ns = 'http://www.w3.org/2000/svg'; var s = document.createElementNS(ns, 'svg'); s.setAttribute('class', 'ic' + (cls ? ' ' + cls : '')); s.setAttribute('aria-hidden', 'true'); var u = document.createElementNS(ns, 'use'); u.setAttribute('href', '#' + id); s.appendChild(u); return s; }
+      function sGet(k, kind) { try { var v = (kind === 's' ? sessionStorage : localStorage).getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+      function sSet(k, v, kind) { try { (kind === 's' ? sessionStorage : localStorage).setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+      function sDel(k, kind) { try { (kind === 's' ? sessionStorage : localStorage).removeItem(k); } catch (e) {} }
+      function clone(o) { return JSON.parse(JSON.stringify(o)); }
+      function pad(n) { return (n < 10 ? '0' : '') + n; }
+      function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+      function parse(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+      function addDays(s, n) { var d = parse(s); d.setDate(d.getDate() + n); return ymd(d); }
+      function hoy() { return ymd(new Date()); }
+      function dow(d) { return (d.getDay() + 6) % 7; }
+      function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+      function fLarga(s) { var d = parse(s); return DIAS[dow(d)] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()] + ' de ' + d.getFullYear(); }
+      function fMedia(s) { var d = parse(s); return DIAS[dow(d)] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()]; }
+      function fCorta(s) { var d = parse(s); return d.getDate() + ' ' + MESES[d.getMonth()].slice(0, 3); }
+      function fin(a) { return a.fechaFin || a.fecha; }
+      function fechaTexto(a) { return a.fechaFin ? 'Del ' + fMedia(a.fecha) + ' al ' + fLarga(a.fechaFin) : cap(fLarga(a.fecha)); }
+      function horaTexto(a) { return a.hora ? a.hora + (a.horaFin ? ' – ' + a.horaFin : '') : 'Todo el día'; }
+      function fechaHora(iso) { var d = new Date(iso); if (isNaN(d)) return iso; return d.getDate() + ' de ' + MESES[d.getMonth()] + ' de ' + d.getFullYear() + ', ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+      function colorize(el, cat) { var c = CAT[cat] || CATS[0]; el.style.setProperty('--c', c.c); el.style.setProperty('--t', c.t); }
+
+      /* ---------- datos ---------- */
+      var RE_F = /^\d{4}-\d{2}-\d{2}$/, RE_H = /^\d{2}:\d{2}$/, RE_URL = /^https?:\/\/[^\s]+$/i;
+      function uid() { return 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+      function str(v, max) { return (typeof v === 'string' ? v : v == null ? '' : String(v)).trim().slice(0, max); }
+      function limpiar(a) {
+        if (!a || typeof a !== 'object') return null;
+        var o = { id: str(a.id, 40) || uid(), titulo: str(a.titulo, 140), categoria: str(a.categoria, 20), fecha: str(a.fecha, 10), fechaFin: str(a.fechaFin, 10), hora: str(a.hora, 5), horaFin: str(a.horaFin, 5), lugar: str(a.lugar, 140), descripcion: str(a.descripcion, 2000), enlace: str(a.enlace, 300) };
+        if (!o.titulo || !RE_F.test(o.fecha) || isNaN(parse(o.fecha))) return null;
+        if (!RE_F.test(o.fechaFin) || o.fechaFin <= o.fecha) o.fechaFin = '';
+        if (!RE_H.test(o.hora)) { o.hora = ''; o.horaFin = ''; }
+        if (!RE_H.test(o.horaFin)) o.horaFin = '';
+        if (!CAT[o.categoria]) o.categoria = 'reunion';
+        if (o.enlace && !RE_URL.test(o.enlace)) o.enlace = '';
+        return o;
+      }
+      function normalizar(data) {
+        var lista = Array.isArray(data) ? data : (data && Array.isArray(data.actividades) ? data.actividades : []);
+        var vistos = {};
+        return { actualizado: data && typeof data.actualizado === 'string' ? data.actualizado : '', actividades: lista.map(limpiar).filter(function (a) { if (!a || vistos[a.id]) return false; vistos[a.id] = 1; return true; }) };
+      }
+      function ordenar(l) { return l.slice().sort(function (a, b) { return (a.fecha + (a.hora || '00:00')).localeCompare(b.fecha + (b.hora || '00:00')) || a.titulo.localeCompare(b.titulo, 'es'); }); }
+
+      /* ---------- exportar a calendarios ---------- */
+      function compacto(s) { return s.replace(/-/g, ''); }
+      function sumarHora(h, n) { var p = h.split(':'); var t = Math.min(+p[0] * 60 + +p[1] + n, 23 * 60 + 59); return pad(Math.floor(t / 60)) + ':' + pad(t % 60); }
+      function rango(a) {
+        if (!a.hora) return { todo: true, ini: compacto(a.fecha), fin: compacto(addDays(fin(a), 1)) };
+        var hf = a.horaFin || sumarHora(a.hora, 60);
+        return { todo: false, ini: compacto(a.fecha) + 'T' + a.hora.replace(':', '') + '00', fin: compacto(fin(a)) + 'T' + hf.replace(':', '') + '00' };
+      }
+      function detalles(a) { return a.descripcion + (a.enlace ? (a.descripcion ? '\n\n' : '') + a.enlace : ''); }
+      function googleUrl(a) {
+        var r = rango(a), det = detalles(a);
+        return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(a.titulo) + '&dates=' + r.ini + '/' + r.fin + (r.todo ? '' : '&ctz=America/La_Paz') + (det ? '&details=' + encodeURIComponent(det) : '') + (a.lugar ? '&location=' + encodeURIComponent(a.lugar) : '');
+      }
+      function icsEsc(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+      function fold(line) { var out = [], s = line; while (s.length > 74) { out.push(s.slice(0, 74)); s = ' ' + s.slice(74); } out.push(s); return out.join('\r\n'); }
+      function ics(lista) {
+        var n = new Date(), st = n.getUTCFullYear() + pad(n.getUTCMonth() + 1) + pad(n.getUTCDate()) + 'T' + pad(n.getUTCHours()) + pad(n.getUTCMinutes()) + pad(n.getUTCSeconds()) + 'Z';
+        var L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//TILKA Frente Estudiantil//Calendario//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:Actividades T.I.L.K.A.', 'X-WR-TIMEZONE:America/La_Paz', 'BEGIN:VTIMEZONE', 'TZID:America/La_Paz', 'BEGIN:STANDARD', 'DTSTART:19700101T000000', 'TZOFFSETFROM:-0400', 'TZOFFSETTO:-0400', 'TZNAME:-04', 'END:STANDARD', 'END:VTIMEZONE'];
+        lista.forEach(function (a) {
+          var r = rango(a), det = detalles(a);
+          L.push('BEGIN:VEVENT', 'UID:' + a.id + '@tilka', 'DTSTAMP:' + st);
+          if (r.todo) L.push('DTSTART;VALUE=DATE:' + r.ini, 'DTEND;VALUE=DATE:' + r.fin);
+          else L.push('DTSTART;TZID=America/La_Paz:' + r.ini, 'DTEND;TZID=America/La_Paz:' + r.fin);
+          L.push('SUMMARY:' + icsEsc(a.titulo), 'CATEGORIES:' + icsEsc(CAT[a.categoria].nombre));
+          if (a.lugar) L.push('LOCATION:' + icsEsc(a.lugar));
+          if (det) L.push('DESCRIPTION:' + icsEsc(det));
+          if (a.enlace) L.push('URL:' + a.enlace);
+          L.push('END:VEVENT');
+        });
+        L.push('END:VCALENDAR');
+        return L.map(fold).join('\r\n') + '\r\n';
+      }
+      function descargar(nombre, tipo, texto) {
+        var blob = new Blob([texto], { type: tipo }), url = URL.createObjectURL(blob), a = mk('a');
+        a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+      }
+      function slug(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50) || 'actividad'; }
+
+      /* ---------- ventanas, confirmaciones y avisos ---------- */
+      var ultimoFoco = null;
+      function abrirDlg(d) { ultimoFoco = document.activeElement; if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', ''); }
+      function cerrarDlg(d) { if (typeof d.close === 'function' && d.open) d.close(); else d.removeAttribute('open'); }
+      function prepararDlg(d) {
+        d.addEventListener('click', function (e) { if (e.target === d || e.target.closest('[data-close]')) cerrarDlg(d); });
+        d.addEventListener('close', function () { if (ultimoFoco && document.contains(ultimoFoco)) { try { ultimoFoco.focus({ preventScroll: true }); } catch (e) {} } });
+      }
+      function setLabel(b, t) { var s = b.querySelector('span'); if (s) s.textContent = t; else b.textContent = t; }
+      function resetConfirm(scope) { $$('[data-confirm]', scope).forEach(function (b) { if (b._orig != null) { setLabel(b, b._orig); b._orig = null; } }); }
+      function confirmar(b) {
+        if (b._orig != null) { setLabel(b, b._orig); b._orig = null; return true; }
+        var s = b.querySelector('span'); b._orig = s ? s.textContent : b.textContent; setLabel(b, b.getAttribute('data-confirm'));
+        clearTimeout(b._t); b._t = setTimeout(function () { if (b._orig != null) { setLabel(b, b._orig); b._orig = null; } }, 4000);
+        return false;
+      }
+      var toastEl = null, toastT;
+      function toast(msg, accion, fn, error) {
+        if (!toastEl) { toastEl = mk('div', 'toast'); toastEl.setAttribute('role', 'status'); toastEl.setAttribute('aria-live', 'polite'); toastEl.appendChild(mk('span')); var bb = mk('button'); bb.type = 'button'; bb.hidden = true; toastEl.appendChild(bb); document.body.appendChild(toastEl); }
+        toastEl.querySelector('span').textContent = msg;
+        var b = toastEl.querySelector('button');
+        b.hidden = !accion; b.textContent = accion || ''; b.onclick = accion ? function () { toastEl.classList.remove('is-show'); fn(); } : null;
+        toastEl.classList.toggle('is-error', !!error);
+        toastEl.classList.add('is-show');
+        clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('is-show'); }, accion ? 7000 : (error ? 7000 : 4500));
+      }
+
+      /* ---------- componente calendario ---------- */
+      var TPL =
+        '<div class="cal-bar">' +
+          '<div class="cal-nav" data-r="nav">' +
+            '<button class="cal-ib" type="button" data-act="prev" aria-label="Mes anterior"><svg class="ic" aria-hidden="true"><use href="#c-chev-l"/></svg></button>' +
+            '<h3 class="cal-title" data-r="title" aria-live="polite">Calendario</h3>' +
+            '<button class="cal-ib" type="button" data-act="next" aria-label="Mes siguiente"><svg class="ic" aria-hidden="true"><use href="#c-chev-r"/></svg></button>' +
+            '<button class="cal-today" type="button" data-act="today">Hoy</button>' +
+          '</div>' +
+          '<h3 class="cal-title" data-r="title-list" hidden>Agenda</h3>' +
+          '<div class="cal-tools">' +
+            '<div class="seg" role="group" aria-label="Vista">' +
+              '<button type="button" data-view="mes" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#c-grid"/></svg>Mes</button>' +
+              '<button type="button" data-view="lista" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#c-list"/></svg>Lista</button>' +
+            '</div>' +
+            '<button class="btn btn--accent btn--sm only-admin" type="button" data-act="new"><svg class="ic" aria-hidden="true"><use href="#c-plus"/></svg>Nueva actividad</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cal-filters" role="group" aria-label="Filtrar por tipo de actividad"><span class="cal-filters-label">Mostrar</span></div>' +
+        '<div class="cal-body" data-r="body">' +
+          '<div class="cal-month" data-r="month">' +
+            '<div class="cal-wd" aria-hidden="true"><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span></div>' +
+            '<div class="cal-grid" data-r="grid" aria-label="Días del mes"></div>' +
+          '</div>' +
+          '<div class="cal-list" data-r="list" hidden></div>' +
+          '<aside class="cal-side" data-r="side" aria-label="Actividades del día seleccionado"></aside>' +
+        '</div>' +
+        '<div class="cal-foot" data-r="foot"><span data-r="updated">Cargando actividades…</span></div>';
+
+      var DET_TPL =
+        '<div class="dlg-head"><span class="ev-cat" data-r="cat"></span><h3 data-r="title"></h3>' +
+        '<button class="dlg-x" type="button" data-close aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="#c-x"/></svg></button></div>' +
+        '<div class="dlg-body"><ul class="det-list" data-r="list"></ul><p class="det-desc" data-r="desc" hidden></p></div>' +
+        '<div class="dlg-foot">' +
+          '<button class="btn btn--line btn--sm" type="button" data-det="ics"><svg class="ic" aria-hidden="true"><use href="#c-download"/></svg>Añadir a mi calendario</button>' +
+          '<a class="btn btn--line btn--sm" data-r="google" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#c-ext"/></svg>Google Calendar</a>' +
+        '</div>';
+
+      function Calendario(root, opts) {
+        opts = opts || {};
+        sprite();
+        var admin = !!opts.admin;
+        var items = [], actualizado = '', cargado = false;
+        var KV = opts.claveVista || 'tilka-cal-vista';
+        var vista = sGet(KV) === 'lista' ? 'lista' : 'mes';
+        var hd = parse(hoy()), cy = hd.getFullYear(), cm = hd.getMonth(), sel = hoy();
+        var filtros = {}; CATS.forEach(function (c) { filtros[c.id] = true; });
+        var verPasadas = false, detalleId = null;
+
+        root.classList.add('cal'); root.classList.toggle('is-admin', admin);
+        root.innerHTML = TPL;
+        function R(n) { return root.querySelector('[data-r="' + n + '"]'); }
+        var grid = R('grid'), side = R('side'), list = R('list'), body = R('body');
+        if (opts.pie === false) R('foot').remove();
+        var fbox = root.querySelector('.cal-filters');
+        CATS.forEach(function (c) {
+          var b = mk('button', 'chip cal-chip'); b.type = 'button'; b.setAttribute('data-cat', c.id); b.setAttribute('aria-pressed', 'true');
+          b.style.setProperty('--c', c.c); b.appendChild(mk('i')); b.appendChild(document.createTextNode(c.nombre)); fbox.appendChild(b);
+        });
+
+        /* ventana de detalle */
+        var det = mk('dialog', 'dlg'); det.innerHTML = DET_TPL;
+        var detTitleId = 'det-t-' + Math.random().toString(36).slice(2, 7);
+        det.querySelector('[data-r="title"]').id = detTitleId; det.setAttribute('aria-labelledby', detTitleId);
+        if (admin) {
+          var foot = det.querySelector('.dlg-foot');
+          foot.insertAdjacentHTML('beforeend',
+            '<span class="spacer"></span>' +
+            '<button class="btn btn--line btn--sm" type="button" data-det="dup"><svg class="ic" aria-hidden="true"><use href="#c-copy"/></svg>Duplicar</button>' +
+            '<button class="btn btn--line btn--sm" type="button" data-det="del" data-confirm="¿Seguro? Eliminar"><svg class="ic" aria-hidden="true"><use href="#c-trash"/></svg><span>Eliminar</span></button>' +
+            '<button class="btn btn--dark btn--sm" type="button" data-det="edit"><svg class="ic" aria-hidden="true"><use href="#c-edit"/></svg>Editar</button>');
+        }
+        document.body.appendChild(det); prepararDlg(det);
+        function D(n) { return det.querySelector('[data-r="' + n + '"]'); }
+
+        function buscar(id) { for (var i = 0; i < items.length; i++) if (items[i].id === id) return items[i]; return null; }
+        function filtradas() { return items.filter(function (a) { return filtros[a.categoria]; }); }
+        function mapa(desde, hasta) {
+          var m = {};
+          filtradas().forEach(function (a) {
+            var f = fin(a); if (f < desde || a.fecha > hasta) return;
+            var d = a.fecha < desde ? desde : a.fecha, g = 0;
+            while (d <= f && d <= hasta && g++ < 400) { (m[d] = m[d] || []).push({ a: a, cont: d !== a.fecha }); d = addDays(d, 1); }
+          });
+          Object.keys(m).forEach(function (k) { m[k].sort(function (x, y) { return (x.cont === y.cont ? 0 : x.cont ? -1 : 1) || (x.a.hora || '').localeCompare(y.a.hora || ''); }); });
+          return m;
+        }
+
+        function render() {
+          $$('.seg button', root).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === vista)); });
+          $$('.cal-chip', root).forEach(function (b) { b.setAttribute('aria-pressed', String(!!filtros[b.getAttribute('data-cat')])); });
+          var up = R('updated');
+          if (up) up.textContent = !cargado ? 'Cargando actividades…' : actualizado ? 'Última actualización: ' + fechaHora(actualizado) : 'Aún no hay actividades publicadas';
+          var esMes = vista === 'mes';
+          R('month').hidden = !esMes; side.hidden = !esMes; list.hidden = esMes; R('nav').hidden = !esMes; R('title-list').hidden = esMes;
+          body.classList.toggle('is-list', !esMes);
+          if (esMes) { renderMes(); renderSide(); } else renderLista();
+        }
+
+        function renderMes() {
+          R('title').textContent = MESES[cm] + ' ' + cy;
+          var first = new Date(cy, cm, 1), off = dow(first), dim = new Date(cy, cm + 1, 0).getDate();
+          var semanas = Math.ceil((off + dim) / 7), start = ymd(new Date(cy, cm, 1 - off)), end = addDays(start, semanas * 7 - 1);
+          var m = mapa(start, end), h = hoy(), foco = (sel >= start && sel <= end) ? sel : ymd(first);
+          grid.textContent = '';
+          for (var i = 0; i < semanas * 7; i++) {
+            var ds = addDays(start, i), d = parse(ds), evs = m[ds] || [];
+            var cell = mk('div', 'cal-cell'); cell.setAttribute('data-date', ds);
+            if (d.getMonth() !== cm) cell.classList.add('is-out');
+            if (ds === h) cell.classList.add('is-today');
+            if (ds === sel) cell.classList.add('is-sel');
+            var b = mk('button', 'day-btn', String(d.getDate())); b.type = 'button'; b.setAttribute('data-day', ds); b.tabIndex = ds === foco ? 0 : -1;
+            b.setAttribute('aria-label', cap(fLarga(ds)) + (evs.length ? ', ' + evs.length + (evs.length === 1 ? ' actividad' : ' actividades') : ', sin actividades'));
+            if (ds === sel) b.setAttribute('aria-pressed', 'true');
+            if (ds === h) b.setAttribute('aria-current', 'date');
+            cell.appendChild(b);
+            var mostrar = evs.length > 3 ? 2 : evs.length;
+            evs.slice(0, mostrar).forEach(function (e) {
+              var p = mk('button', 'ev-pill' + (e.cont ? ' is-cont' : ''), (e.cont ? '↳ ' : (e.a.hora ? e.a.hora + ' ' : '')) + e.a.titulo);
+              p.type = 'button'; p.tabIndex = -1; p.setAttribute('data-ev', e.a.id); p.title = e.a.titulo; colorize(p, e.a.categoria); cell.appendChild(p);
+            });
+            if (evs.length > mostrar) { var more = mk('button', 'ev-more', '+' + (evs.length - mostrar) + ' más'); more.type = 'button'; more.tabIndex = -1; more.setAttribute('data-day', ds); cell.appendChild(more); }
+            if (evs.length) { var dots = mk('span', 'ev-dots'); dots.setAttribute('aria-hidden', 'true'); evs.slice(0, 4).forEach(function (e) { var x = mk('i'); colorize(x, e.a.categoria); dots.appendChild(x); }); cell.appendChild(dots); }
+            grid.appendChild(cell);
+          }
+        }
+
+        function meta(a, conFecha, finTexto) {
+          var m = mk('span', 'ev-meta');
+          function add(ic, t) { var s = mk('span'); s.appendChild(icon(ic)); s.appendChild(document.createTextNode(t)); m.appendChild(s); }
+          if (conFecha) add('c-cal', cap(fMedia(a.fecha)) + (a.fechaFin ? ' – ' + fCorta(a.fechaFin) : ''));
+          if (finTexto && a.fechaFin) add('c-cal', 'Hasta el ' + fMedia(a.fechaFin));
+          add('c-clock', horaTexto(a));
+          if (a.lugar) add('c-pin', a.lugar);
+          return m;
+        }
+        function evCard(a, conFecha) {
+          var b = mk('button', 'ev-card'); b.type = 'button'; b.setAttribute('data-ev', a.id); colorize(b, a.categoria);
+          var w2 = mk('span'); w2.appendChild(mk('span', 'ev-cat', CAT[a.categoria].nombre)); w2.appendChild(mk('strong', null, a.titulo)); w2.appendChild(meta(a, conFecha)); b.appendChild(w2);
+          return b;
+        }
+        function renderSide() {
+          side.textContent = '';
+          var dia = mk('div');
+          dia.appendChild(mk('p', 'side-h', 'Día seleccionado'));
+          dia.appendChild(mk('h4', 'side-date', fMedia(sel)));
+          var evs = (mapa(sel, sel)[sel] || []).map(function (e) { return e.a; });
+          if (evs.length) { var st = mk('div', 'ev-stack'); evs.forEach(function (a) { st.appendChild(evCard(a, !!a.fechaFin)); }); dia.appendChild(st); }
+          else dia.appendChild(mk('p', 'side-empty', 'No hay actividades programadas este día.'));
+          if (admin) { var add = mk('button', 'btn btn--accent btn--sm side-add'); add.type = 'button'; add.setAttribute('data-act', 'new'); add.appendChild(icon('c-plus')); add.appendChild(document.createTextNode('Agregar actividad este día')); dia.appendChild(add); }
+          side.appendChild(dia);
+          var h = hoy(), prox = ordenar(filtradas().filter(function (a) { return fin(a) >= h; })).slice(0, 5);
+          var px = mk('div'); px.appendChild(mk('p', 'side-h', 'Próximas actividades'));
+          if (prox.length) { var st2 = mk('div', 'ev-stack'); prox.forEach(function (a) { st2.appendChild(evCard(a, true)); }); px.appendChild(st2); }
+          else if (!items.length && cargado) {
+            var em = mk('div', 'cal-empty');
+            if (opts.imagenVacio) { var img = mk('img'); img.src = opts.imagenVacio; img.alt = ''; img.onerror = function () { img.remove(); }; em.appendChild(img); }
+            em.appendChild(mk('strong', null, 'Muy pronto'));
+            em.appendChild(mk('span', null, admin ? 'Agrega la primera actividad con «Nueva actividad».' : 'Aquí aparecerán las actividades de T.I.L.K.A.'));
+            px.appendChild(em);
+          } else px.appendChild(mk('p', 'side-empty', 'No hay actividades próximas con los filtros elegidos.'));
+          side.appendChild(px);
+        }
+        function renderLista() {
+          list.textContent = '';
+          var tools = mk('div', 'list-tools');
+          var chk = mk('label', 'check'); var cb = mk('input'); cb.type = 'checkbox'; cb.checked = verPasadas; cb.setAttribute('data-r', 'pasadas');
+          chk.appendChild(cb); chk.appendChild(document.createTextNode('Mostrar actividades pasadas')); tools.appendChild(chk);
+          var all = mk('button', 'btn btn--line btn--sm'); all.type = 'button'; all.setAttribute('data-act', 'ics-all'); all.appendChild(icon('c-download')); all.appendChild(document.createTextNode('Descargar todas (.ics)')); tools.appendChild(all);
+          list.appendChild(tools);
+          var h = hoy(), l = ordenar(filtradas()).filter(function (a) { return verPasadas || fin(a) >= h; });
+          all.hidden = !l.length;
+          if (!l.length) { list.appendChild(mk('p', 'side-empty', items.length ? 'No hay actividades próximas con los filtros elegidos.' : 'Aún no hay actividades en el calendario.')); return; }
+          var mesAct = '';
+          l.forEach(function (a) {
+            var d = parse(a.fecha), key = MESES[d.getMonth()] + ' ' + d.getFullYear();
+            if (key !== mesAct) { mesAct = key; list.appendChild(mk('h4', 'list-month', key)); }
+            var row = mk('button', 'list-row' + (fin(a) < h ? ' is-past' : '')); row.type = 'button'; row.setAttribute('data-ev', a.id); colorize(row, a.categoria);
+            var bd = mk('span', 'dbadge'); bd.appendChild(mk('b', null, String(d.getDate()))); bd.appendChild(mk('span', null, DIAS_C[dow(d)])); row.appendChild(bd);
+            var w2 = mk('span'); w2.appendChild(mk('span', 'ev-cat', CAT[a.categoria].nombre)); w2.appendChild(mk('strong', null, a.titulo)); w2.appendChild(meta(a, false, true)); row.appendChild(w2);
+            row.appendChild(icon('c-chev-r', 'ic-go'));
+            list.appendChild(row);
+          });
+        }
+
+        function irA(ds, enfocar) {
+          sel = ds; var d = parse(ds); cy = d.getFullYear(); cm = d.getMonth(); render();
+          if (enfocar) { var b = grid.querySelector('.day-btn[data-day="' + ds + '"]'); if (b) b.focus(); }
+        }
+        function mover(n) { var d = new Date(cy, cm + n, 1); cy = d.getFullYear(); cm = d.getMonth(); var dim = new Date(cy, cm + 1, 0).getDate(); sel = ymd(new Date(cy, cm, Math.min(parse(sel).getDate(), dim))); render(); }
+
+        function abrirDetalle(id) {
+          var a = buscar(id); if (!a) return;
+          detalleId = id;
+          var c = CAT[a.categoria]; det.style.setProperty('--c', c.c);
+          var cat = D('cat'); cat.textContent = c.nombre; cat.style.setProperty('--c', c.c);
+          D('title').textContent = a.titulo;
+          var ul = D('list'); ul.textContent = '';
+          function fila(ic, nodo) { var li = mk('li'); li.appendChild(icon(ic)); var s = mk('span'); if (typeof nodo === 'string') s.textContent = nodo; else s.appendChild(nodo); li.appendChild(s); ul.appendChild(li); }
+          fila('c-cal', fechaTexto(a)); fila('c-clock', horaTexto(a));
+          if (a.lugar) fila('c-pin', a.lugar);
+          if (a.enlace) { var ln = mk('a', null, a.enlace); ln.href = a.enlace; ln.target = '_blank'; ln.rel = 'noopener noreferrer'; fila('c-ext', ln); }
+          var desc = D('desc'); desc.textContent = a.descripcion; desc.hidden = !a.descripcion;
+          D('google').href = googleUrl(a);
+          resetConfirm(det);
+          abrirDlg(det);
+        }
+        det.addEventListener('click', function (e) {
+          var b = e.target.closest('[data-det]'); if (!b) return;
+          var a = buscar(detalleId); if (!a) return;
+          var k = b.getAttribute('data-det');
+          if (k === 'ics') { descargar(slug(a.titulo) + '.ics', 'text/calendar;charset=utf-8', ics([a])); return; }
+          if (k === 'del' && !confirmar(b)) return;
+          cerrarDlg(det);
+          if (opts.onAccion) opts.onAccion(k, a);
+        });
+
+        root.addEventListener('click', function (e) {
+          var t = e.target;
+          var ev = t.closest('[data-ev]'); if (ev) { abrirDetalle(ev.getAttribute('data-ev')); return; }
+          var chip = t.closest('.cal-chip');
+          if (chip) {
+            var id = chip.getAttribute('data-cat'), todos = CATS.every(function (c) { return filtros[c.id]; });
+            if (todos) CATS.forEach(function (c) { filtros[c.id] = c.id === id; });
+            else { filtros[id] = !filtros[id]; if (!CATS.some(function (c) { return filtros[c.id]; })) CATS.forEach(function (c) { filtros[c.id] = true; }); }
+            render(); return;
+          }
+          var vw = t.closest('[data-view]'); if (vw) { vista = vw.getAttribute('data-view'); sSet(KV, vista); render(); return; }
+          var day = t.closest('[data-day]');
+          if (day) {
+            irA(day.getAttribute('data-day'), day.classList.contains('day-btn'));
+            var celda = day.closest('.cal-cell');
+            if (celda && celda.querySelector('.ev-dots') && window.matchMedia('(max-width: 980px)').matches && side.getBoundingClientRect().top > window.innerHeight * .7) side.scrollIntoView({ block: 'start', behavior: 'smooth' });
+            return;
+          }
+          var cell = t.closest('.cal-cell'); if (cell) { irA(cell.getAttribute('data-date'), true); return; }
+          var act = t.closest('[data-act]'); if (!act) return;
+          switch (act.getAttribute('data-act')) {
+            case 'prev': mover(-1); break;
+            case 'next': mover(1); break;
+            case 'today': irA(hoy(), false); break;
+            case 'new': if (opts.onNuevo) opts.onNuevo(sel); break;
+            case 'ics-all': descargar('actividades-tilka.ics', 'text/calendar;charset=utf-8', ics(ordenar(filtradas()).filter(function (a) { return verPasadas || fin(a) >= hoy(); }))); break;
+          }
+        });
+        root.addEventListener('change', function (e) { if (e.target.getAttribute('data-r') === 'pasadas') { verPasadas = e.target.checked; render(); } });
+        grid.addEventListener('keydown', function (e) {
+          var b = e.target.closest('.day-btn'); if (!b) return;
+          var map = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }, ds = b.getAttribute('data-day'), n = null;
+          if (map[e.key] != null) n = addDays(ds, map[e.key]);
+          else if (e.key === 'Home') n = addDays(ds, -dow(parse(ds)));
+          else if (e.key === 'End') n = addDays(ds, 6 - dow(parse(ds)));
+          else if (e.key === 'PageUp' || e.key === 'PageDown') { e.preventDefault(); mover(e.key === 'PageUp' ? -1 : 1); grid.querySelector('.day-btn[tabindex="0"]').focus(); return; }
+          if (n) { e.preventDefault(); irA(n, true); }
+        });
+
+        render();
+        return {
+          set: function (lista, fecha) { items = lista; actualizado = fecha || ''; cargado = true; render(); },
+          ir: function (fecha) { irA(fecha, false); },
+          seleccionado: function () { return sel; },
+          render: render
+        };
+      }
+
+      w.TilkaCal = {
+        CATS: CATS, CAT: CAT, Calendario: Calendario, normalizar: normalizar, limpiar: limpiar, ordenar: ordenar, uid: uid, clone: clone,
+        ics: ics, descargar: descargar, toast: toast, abrirDlg: abrirDlg, cerrarDlg: cerrarDlg, prepararDlg: prepararDlg, confirmar: confirmar, resetConfirm: resetConfirm,
+        sGet: sGet, sSet: sSet, sDel: sDel, $: $, $$: $$, mk: mk, fechaHora: fechaHora, RE_F: RE_F, RE_H: RE_H, RE_URL: RE_URL
+      };
+    })(window);
+  </script>
+
+  <script>
+    /* =========================================================
+       PANEL DE ADMINISTRACIÓN DEL CALENDARIO
+       Seguridad:
+       - Solo quien tiene un token de GitHub con permiso de escritura
+         en el repositorio puede publicar cambios (GitHub lo verifica).
+       - En cada dispositivo el token se guarda cifrado (AES-GCM, clave
+         derivada de la contraseña con PBKDF2) y nunca en el código.
+       ========================================================= */
+    (function () {
+      'use strict';
+      var C = window.TilkaCal, $ = C.$, $$ = C.$$;
+      var K = { cred: 'tilka-admin-acceso', ses: 'tilka-admin-sesion', resp: 'tilka-admin-respaldo', int: 'tilka-admin-intentos' };
+      var SESION_MIN = 120, ITER = 310000;
+      var cfg = null, token = null, sha = null, items = [], actualizado = '', cal = null;
+      var listo = false, estadoAct = 'ok', tPub = null, enCurso = false, otraVez = false, mensajes = [];
+
+      /* ---------- utilidades ---------- */
+      function enc(s) { return new TextEncoder().encode(s); }
+      function b64(bytes) { var bin = '', u = new Uint8Array(bytes); for (var i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(bin); }
+      function unb64(s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+      function mostrarErr(el, msg) { el.textContent = msg; el.hidden = !msg; }
+      function ocupado(btn, si, texto) { btn.disabled = si; var s = btn.querySelector('span'); if (si) { btn._t = s.textContent; s.textContent = texto; } else if (btn._t) s.textContent = btn._t; }
+      function clave() { return cfg.owner + '/' + cfg.repo + '@' + cfg.branch + ':' + cfg.ruta; }
+
+      /* ---------- repositorio (se detecta desde la dirección de GitHub Pages) ---------- */
+      function detectar() {
+        var o = '', r = '', m = location.hostname.match(/^([a-z0-9-]+)\.github\.io$/i);
+        if (m) { o = m[1]; var seg = location.pathname.split('/').filter(Boolean); r = (seg.length && !/\.html?$/i.test(seg[0])) ? seg[0] : o + '.github.io'; }
+        return { owner: o, repo: r, branch: 'main', ruta: 'actividades.json' };
+      }
+
+      /* ---------- cifrado del token ---------- */
+      function derivar(pass, salt) {
+        return crypto.subtle.importKey('raw', enc(pass), 'PBKDF2', false, ['deriveKey']).then(function (base) {
+          return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+        });
+      }
+      function cifrar(texto, pass) {
+        var salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+        return derivar(pass, salt).then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, enc(texto)); })
+          .then(function (ct) { return { v: 1, s: b64(salt), i: b64(iv), c: b64(ct) }; });
+      }
+      function descifrar(o, pass) {
+        return derivar(pass, unb64(o.s)).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(o.i) }, k, unb64(o.c)); })
+          .then(function (pt) { return new TextDecoder().decode(pt); });
+      }
+
+      /* ---------- API de GitHub ---------- */
+      function api(c, tok, ruta, opt) {
+        opt = opt || {};
+        var h = { 'Authorization': 'Bearer ' + tok, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+        if (opt.body) h['Content-Type'] = 'application/json';
+        return fetch('https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo) + (ruta || ''), { method: opt.method || 'GET', headers: h, body: opt.body, cache: 'no-store' })
+          .then(function (r) { if (!r.ok) { var e = new Error('http'); e.status = r.status; throw e; } return r.status === 204 ? null : r.json(); });
+      }
+      function rutaArchivo() { return '/contents/' + cfg.ruta.split('/').map(encodeURIComponent).join('/'); }
+      function msgError(e) {
+        var s = e && e.status;
+        if (s === 401) return 'El token no es válido o ya venció.';
+        if (s === 403) return 'El token no tiene permiso de escritura (Contents: Read and write) en este repositorio.';
+        if (s === 404) return 'No se encontró el repositorio o la rama, o el token no tiene acceso a ese repositorio.';
+        if (s === 409 || s === 422) return 'El archivo cambió en GitHub mientras se publicaba. Vuelve a intentarlo.';
+        if (s) return 'GitHub respondió con un error (' + s + ').';
+        return 'No se pudo conectar con GitHub. Revisa tu conexión a internet.';
+      }
+      function verificar(c, tok) {
+        return api(c, tok, '').then(function (repo) {
+          if (!repo.permissions || !repo.permissions.push) { var e = new Error('sin permiso'); e.status = 403; throw e; }
+          return repo;
+        });
+      }
+
+      /* ---------- vistas ---------- */
+      function verLogin(modo, msg) {
+        $('#vista-editor').hidden = true; $('#tb-right').hidden = true; $('#vista-login').hidden = false;
+        var cred = C.sGet(K.cred);
+        if (!modo) modo = cred && cred.c ? 'entrar' : 'config';
+        $('#f-entrar').hidden = modo !== 'entrar'; $('#f-config').hidden = modo !== 'config';
+        if (modo === 'entrar') {
+          $('#l-pass').value = ''; mostrarErr($('#l-err'), msg || '');
+          C.resetConfirm($('#f-entrar'));
+          setTimeout(function () { $('#l-pass').focus(); }, 50);
+        } else {
+          var d = (cred && cred.cfg) || detectar();
+          $('#c-owner').value = d.owner; $('#c-repo').value = d.repo; $('#c-branch').value = d.branch || 'main'; $('#c-path').value = d.ruta || 'actividades.json';
+          $('#c-token').value = ''; $('#c-pass').value = ''; $('#c-pass2').value = '';
+          actualizarRepoTxt(); $('#c-adv').open = !(d.owner && d.repo);
+          mostrarErr($('#c-err'), msg || '');
+          setTimeout(function () { $('#c-token').focus(); }, 50);
+        }
+      }
+      function actualizarRepoTxt() { var o = $('#c-owner').value.trim(), r = $('#c-repo').value.trim(); $('#c-repo-txt').textContent = o && r ? '· ' + o + '/' + r : '· sin configurar'; }
+      ['#c-owner', '#c-repo'].forEach(function (s) { $(s).addEventListener('input', actualizarRepoTxt); });
+
+      /* ---------- primer ingreso ---------- */
+      $('#f-config').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var err = $('#c-err'), btn = $('#c-btn');
+        var tok = $('#c-token').value.trim(), p1 = $('#c-pass').value, p2 = $('#c-pass2').value;
+        var c = { owner: $('#c-owner').value.trim(), repo: $('#c-repo').value.trim(), branch: $('#c-branch').value.trim() || 'main', ruta: ($('#c-path').value.trim() || 'actividades.json').replace(/^\/+/, '') };
+        if (!tok) return mostrarErr(err, 'Pega tu token de GitHub.');
+        if (p1.length < 8) return mostrarErr(err, 'La contraseña debe tener al menos 8 caracteres.');
+        if (p1 !== p2) return mostrarErr(err, 'Las contraseñas no coinciden.');
+        if (!c.owner || !c.repo) { $('#c-adv').open = true; return mostrarErr(err, 'Escribe tu usuario de GitHub y el nombre del repositorio.'); }
+        if (!window.crypto || !crypto.subtle) return mostrarErr(err, 'Este navegador no permite cifrar el token. Abre el panel desde la dirección https de tu página.');
+        mostrarErr(err, ''); ocupado(btn, true, 'Verificando…');
+        verificar(c, tok).then(function () { return cifrar(tok, p1); }).then(function (o) {
+          o.cfg = c; C.sSet(K.cred, o); C.sDel(K.int);
+          cfg = c; entrar(tok);
+        }).catch(function (e) { mostrarErr(err, msgError(e)); }).then(function () { ocupado(btn, false); });
+      });
+
+      /* ---------- ingreso con contraseña ---------- */
+      $('#f-entrar').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var err = $('#l-err'), btn = $('#l-btn'), cred = C.sGet(K.cred), pass = $('#l-pass').value;
+        if (!cred) return verLogin('config');
+        var it = C.sGet(K.int) || { n: 0, hasta: 0 };
+        if (it.hasta > Date.now()) return mostrarErr(err, 'Demasiados intentos. Espera ' + Math.ceil((it.hasta - Date.now()) / 1000) + ' segundos.');
+        if (!pass) return mostrarErr(err, 'Escribe tu contraseña.');
+        mostrarErr(err, ''); ocupado(btn, true, 'Comprobando…');
+        descifrar(cred, pass).then(function (tok) {
+          C.sDel(K.int); cfg = cred.cfg;
+          return verificar(cfg, tok).then(function () { entrar(tok); }, function (e) {
+            if (e.status === 401 || e.status === 403) verLogin('config', 'El token guardado ya no sirve (' + msgError(e).toLowerCase() + ') Configura uno nuevo.');
+            else mostrarErr(err, msgError(e));
+          });
+        }, function () {
+          it.n += 1;
+          if (it.n >= 5) { it.hasta = Date.now() + Math.min(30000 * Math.pow(2, it.n - 5), 15 * 60000); }
+          C.sSet(K.int, it);
+          mostrarErr(err, it.hasta > Date.now() ? 'Contraseña incorrecta. Demasiados intentos: espera un momento.' : 'Contraseña incorrecta.');
+          $('#l-pass').select();
+        }).then(function () { ocupado(btn, false); });
+      });
+      $('#btn-olvide').addEventListener('click', function () {
+        if (!C.confirmar(this)) return;
+        C.sDel(K.cred); C.sDel(K.int); verLogin('config');
+      });
+      $$('[data-eye]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var inp = document.getElementById(b.getAttribute('data-eye')), ver = inp.type === 'password';
+          inp.type = ver ? 'text' : 'password'; b.setAttribute('aria-pressed', String(ver));
+          b.setAttribute('aria-label', (ver ? 'Ocultar ' : 'Mostrar ') + (inp.id === 'c-token' ? 'token' : 'contraseña'));
+        });
+      });
+
+      /* ---------- sesión ---------- */
+      function entrar(tok) {
+        token = tok;
+        C.sSet(K.ses, { tok: tok, cfg: cfg, exp: Date.now() + SESION_MIN * 60000 }, 's');
+        $('#vista-login').hidden = true; $('#vista-editor').hidden = false; $('#tb-right').hidden = false;
+        var sub = $('#ed-sub'); sub.textContent = 'Publicando en ';
+        var code = C.mk('code', null, cfg.owner + '/' + cfg.repo); sub.appendChild(code);
+        sub.appendChild(document.createTextNode(' · rama ')); sub.appendChild(C.mk('code', null, cfg.branch));
+        sub.appendChild(document.createTextNode(' · ')); sub.appendChild(C.mk('code', null, cfg.ruta));
+        if (!cal) cal = C.Calendario($('#cal'), { admin: true, pie: false, claveVista: 'tilka-admin-vista', imagenVacio: 'img/tilkayo-mascota.png', onNuevo: function (f) { if (listo) abrirForm(null, f); else C.toast('Espera a que se carguen las actividades.'); }, onAccion: accion });
+        cargar();
+      }
+      function salir(msg) {
+        clearTimeout(tPub); token = null; sha = null; items = []; listo = false; C.sDel(K.ses, 's');
+        var t = document.querySelector('.toast'); if (t) t.classList.remove('is-show');
+        if (cal) cal.set([], '');
+        verLogin(null, msg);
+      }
+      $('#btn-salir').addEventListener('click', function () {
+        if (estadoAct === 'pend' || estadoAct === 'saving') { C.toast('Espera un momento: se están publicando tus cambios.'); publicar(); return; }
+        salir();
+      });
+      function renovar() { var s = C.sGet(K.ses, 's'); if (s) { s.exp = Date.now() + SESION_MIN * 60000; C.sSet(K.ses, s, 's'); } }
+      setInterval(function () { var s = C.sGet(K.ses, 's'); if (token && (!s || s.exp < Date.now()) && estadoAct === 'ok') salir('La sesión se cerró por inactividad.'); }, 60000);
+
+      /* ---------- datos ---------- */
+      function decodificar(b) { return new TextDecoder().decode(unb64(b.replace(/\s/g, ''))); }
+      function cargar() {
+        listo = false; estado('cargando');
+        api(cfg, token, rutaArchivo() + '?ref=' + encodeURIComponent(cfg.branch) + '&t=' + Date.now()).then(function (f) {
+          sha = f.sha;
+          var d = C.normalizar(JSON.parse(decodificar(f.content || '')));
+          return d;
+        }, function (e) {
+          if (e.status === 404) { sha = null; return { actualizado: '', actividades: [] }; }
+          throw e;
+        }).then(function (d) {
+          items = d.actividades; actualizado = d.actualizado; listo = true;
+          cal.set(items, actualizado);
+          var r = C.sGet(K.resp);
+          $('#banner-recuperar').hidden = !(r && r.repo === clave() && Array.isArray(r.items) && JSON.stringify(C.ordenar(r.items)) !== JSON.stringify(C.ordenar(items)));
+          estado('ok');
+        }).catch(function (e) {
+          if (e.status === 401) return salir('El token ya no es válido. Vuelve a ingresar o configura uno nuevo.');
+          estado('error', msgError(e)); C.toast('No se pudieron cargar las actividades: ' + msgError(e), 'Reintentar', cargar, true);
+        });
+      }
+      function estado(k, detalle) {
+        estadoAct = k;
+        var b = $('#estado'), t = { ok: 'Todo publicado', pend: 'Cambios por publicar…', saving: 'Publicando…', cargando: 'Cargando…', error: 'No se publicó · Reintentar' }[k];
+        b.setAttribute('data-e', k); b.querySelector('span').textContent = t; b.title = detalle || '';
+      }
+      $('#estado').addEventListener('click', function () { if (estadoAct === 'error') { if (!listo) cargar(); else publicar(); } });
+
+      function cambio(nuevos, desc, aviso, deshacer) {
+        if (!listo) { C.toast('Espera a que se carguen las actividades desde GitHub.', null, null, true); return; }
+        items = nuevos; cal.set(items, actualizado);
+        C.sSet(K.resp, { repo: clave(), items: items, t: Date.now() });
+        mensajes.push(desc); renovar();
+        estado('pend');
+        clearTimeout(tPub); tPub = setTimeout(publicar, 700);
+        if (aviso) C.toast(aviso, deshacer ? 'Deshacer' : null, deshacer);
+      }
+      function publicar() {
+        clearTimeout(tPub);
+        if (enCurso) { otraVez = true; return; }
+        if (!token) return;
+        enCurso = true; otraVez = false; estado('saving');
+        var data = { actualizado: new Date().toISOString(), actividades: C.ordenar(items) };
+        var texto = JSON.stringify(data, null, 2) + '\n';
+        var desc = mensajes.splice(0).join('; ').slice(0, 200) || 'actualizar actividades';
+        function put() {
+          var body = { message: 'Calendario: ' + desc, content: b64(enc(texto)), branch: cfg.branch };
+          if (sha) body.sha = sha;
+          return api(cfg, token, rutaArchivo(), { method: 'PUT', body: JSON.stringify(body) });
+        }
+        function refrescarSha() {
+          return api(cfg, token, rutaArchivo() + '?ref=' + encodeURIComponent(cfg.branch) + '&t=' + Date.now()).then(function (f) { sha = f.sha; }, function (e) { if (e.status === 404) sha = null; else throw e; });
+        }
+        put().catch(function (e) { if (e.status === 409 || e.status === 422) return refrescarSha().then(put); throw e; })
+          .then(function (r) {
+            sha = r && r.content ? r.content.sha : sha; actualizado = data.actualizado;
+            cal.set(items, actualizado);
+            if (!otraVez) C.sDel(K.resp);
+            $('#banner-recuperar').hidden = true;
+            estado(otraVez ? 'pend' : 'ok', r && r.commit ? 'Último cambio: ' + r.commit.html_url : '');
+          })
+          .catch(function (e) {
+            mensajes.unshift(desc);
+            if (e.status === 401) { estado('error'); C.toast('El token ya no es válido. Tus cambios quedaron guardados en este dispositivo.', null, null, true); return salir('El token ya no es válido. Tus cambios están guardados: al volver a entrar podrás recuperarlos.'); }
+            estado('error', msgError(e)); C.toast('No se pudo publicar: ' + msgError(e), 'Reintentar', publicar, true);
+          })
+          .then(function () { enCurso = false; if (otraVez) publicar(); });
+      }
+      window.addEventListener('beforeunload', function (e) { if (token && estadoAct !== 'ok' && estadoAct !== 'cargando') { e.preventDefault(); e.returnValue = ''; } });
+
+      /* ---------- acciones ---------- */
+      function accion(k, a) {
+        if (k === 'edit') abrirForm(a);
+        else if (k === 'dup') { var c = C.clone(a); c.id = ''; abrirForm(c, null, true); }
+        else if (k === 'del') {
+          var previas = items;
+          cambio(items.filter(function (x) { return x.id !== a.id; }), 'eliminar «' + a.titulo + '»', 'Actividad eliminada.', function () { cambio(previas, 'restaurar «' + a.titulo + '»', 'Se restauró la actividad.'); });
+        }
+      }
+      $('#btn-recargar').addEventListener('click', function () {
+        if (estadoAct === 'pend' || estadoAct === 'saving') return C.toast('Espera a que terminen de publicarse los cambios.');
+        cargar();
+      });
+      $('#btn-respaldo').addEventListener('click', function () {
+        C.descargar('actividades-respaldo-' + new Date().toISOString().slice(0, 10) + '.json', 'application/json', JSON.stringify({ actualizado: actualizado, actividades: C.ordenar(items) }, null, 2) + '\n');
+      });
+      $('#btn-importar').addEventListener('click', function () { $('#file').click(); });
+      $('#file').addEventListener('change', function (e) {
+        var f = e.target.files[0]; e.target.value = ''; if (!f) return;
+        var rd = new FileReader();
+        rd.onload = function () {
+          try {
+            var raw = JSON.parse(rd.result);
+            if (!Array.isArray(raw) && !(raw && Array.isArray(raw.actividades))) throw 0;
+            var n = C.normalizar(raw).actividades, previas = items;
+            cambio(n, 'importar ' + n.length + ' actividades', 'Se importaron ' + n.length + ' actividades.', function () { cambio(previas, 'deshacer importación', 'Se deshizo la importación.'); });
+          } catch (x) { C.toast('El archivo no tiene el formato del calendario.', null, null, true); }
+        };
+        rd.readAsText(f);
+      });
+      $('#btn-recuperar').addEventListener('click', function () {
+        var r = C.sGet(K.resp); if (!r) return;
+        cambio(C.normalizar({ actividades: r.items }).actividades, 'recuperar cambios no publicados', 'Recuperando y publicando tus cambios…');
+        $('#banner-recuperar').hidden = true;
+      });
+      $('#btn-descartar-resp').addEventListener('click', function () { C.sDel(K.resp); $('#banner-recuperar').hidden = true; });
+
+      /* ---------- formulario ---------- */
+      var dlgForm = $('#dlg-form'), editId = null;
+      C.prepararDlg(dlgForm);
+      C.CATS.forEach(function (c) {
+        var inp = C.mk('input'); inp.type = 'radio'; inp.name = 'categoria'; inp.value = c.id; inp.id = 'fc-' + c.id;
+        var lb = C.mk('label'); lb.htmlFor = inp.id; lb.appendChild(C.mk('i')); lb.appendChild(document.createTextNode(c.nombre));
+        lb.style.setProperty('--c', c.c); lb.style.setProperty('--t', c.t);
+        $('#f-cats').appendChild(inp); $('#f-cats').appendChild(lb);
+      });
+      function syncHora() { var todo = $('#f-todo').checked; $$('[data-hora]').forEach(function (e) { e.hidden = todo; }); if (todo) { $('#f-hora').value = ''; $('#f-hfin').value = ''; } }
+      $('#f-todo').addEventListener('change', syncHora);
+      $('#f-cats').addEventListener('change', function (e) { if (e.target.name === 'categoria') dlgForm.style.setProperty('--c', C.CAT[e.target.value].c); });
+      function abrirForm(a, fecha, duplicar) {
+        editId = a && !duplicar ? a.id : null;
+        $('#form-title').textContent = editId ? 'Editar actividad' : (duplicar ? 'Duplicar actividad' : 'Nueva actividad');
+        var f = $('#cal-form'); f.reset();
+        $$('.err', f).forEach(function (e) { e.hidden = true; }); $$('[aria-invalid]', f).forEach(function (e) { e.removeAttribute('aria-invalid'); });
+        var v = a || { titulo: '', categoria: 'reunion', fecha: fecha || cal.seleccionado(), fechaFin: '', hora: '', horaFin: '', lugar: '', descripcion: '', enlace: '' };
+        $('#f-titulo').value = v.titulo; $('#f-fecha').value = v.fecha; $('#f-fin').value = v.fechaFin || '';
+        $('#f-hora').value = v.hora || ''; $('#f-hfin').value = v.horaFin || ''; $('#f-todo').checked = !v.hora;
+        $('#f-lugar').value = v.lugar || ''; $('#f-desc').value = v.descripcion || ''; $('#f-enlace').value = v.enlace || '';
+        var r = $('#fc-' + (C.CAT[v.categoria] ? v.categoria : 'reunion')); if (r) r.checked = true;
+        dlgForm.style.setProperty('--c', (C.CAT[v.categoria] || C.CATS[0]).c);
+        syncHora(); C.abrirDlg(dlgForm);
+        setTimeout(function () { $('#f-titulo').focus(); }, 30);
+      }
+      function marcar(id, campo, msg) { var e = $('#' + id); e.textContent = msg; e.hidden = false; $('#' + campo).setAttribute('aria-invalid', 'true'); }
+      $('#cal-form').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var f = this; $$('.err', f).forEach(function (e) { e.hidden = true; }); $$('[aria-invalid]', f).forEach(function (e) { e.removeAttribute('aria-invalid'); });
+        var todo = $('#f-todo').checked, cat = f.querySelector('input[name="categoria"]:checked');
+        var o = { id: editId || C.uid(), titulo: $('#f-titulo').value.trim(), categoria: cat ? cat.value : 'reunion', fecha: $('#f-fecha').value, fechaFin: $('#f-fin').value,
+          hora: todo ? '' : $('#f-hora').value, horaFin: todo ? '' : $('#f-hfin').value, lugar: $('#f-lugar').value.trim(), descripcion: $('#f-desc').value.trim(), enlace: $('#f-enlace').value.trim() };
+        var malos = [];
+        if (!o.titulo) { marcar('e-titulo', 'f-titulo', 'Escribe un título.'); malos.push('f-titulo'); }
+        if (!C.RE_F.test(o.fecha)) { marcar('e-fecha', 'f-fecha', 'Elige la fecha.'); malos.push('f-fecha'); }
+        if (o.fechaFin && o.fechaFin < o.fecha) { marcar('e-fin', 'f-fin', 'Debe ser igual o posterior a la fecha de inicio.'); malos.push('f-fin'); }
+        if (o.fechaFin === o.fecha) o.fechaFin = '';
+        if (!todo && !C.RE_H.test(o.hora)) { marcar('e-hora', 'f-hora', 'Indica la hora o marca «Todo el día».'); malos.push('f-hora'); }
+        if (!todo && o.horaFin && !o.fechaFin && o.horaFin <= o.hora) { marcar('e-hfin', 'f-hfin', 'Debe ser posterior a la hora de inicio.'); malos.push('f-hfin'); }
+        if (o.enlace && !C.RE_URL.test(o.enlace)) { marcar('e-enlace', 'f-enlace', 'El enlace debe empezar con https://'); malos.push('f-enlace'); }
+        if (malos.length) { $('#' + malos[0]).focus(); return; }
+        var limpio = C.limpiar(o), previas = items, nuevos;
+        if (editId) nuevos = items.map(function (x) { return x.id === editId ? limpio : x; });
+        else nuevos = items.concat([limpio]);
+        C.cerrarDlg(dlgForm);
+        cal.ir(limpio.fecha);
+        cambio(nuevos, (editId ? 'editar «' : 'agregar «') + limpio.titulo + '»', editId ? 'Actividad actualizada.' : 'Actividad agregada.', function () { cambio(previas, 'deshacer cambio', 'Se deshizo el cambio.'); });
+      });
+
+      /* ---------- inicio ---------- */
+      var s = C.sGet(K.ses, 's');
+      if (s && s.tok && s.cfg && s.exp > Date.now()) { cfg = s.cfg; entrar(s.tok); }
+      else { C.sDel(K.ses, 's'); verLogin(); }
+    })();
+  </script>
+</body>
+</html>
