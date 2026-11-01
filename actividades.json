@@ -1,4 +1,17 @@
 {
-  "actualizado": "2026-11-01T17:45:56.726Z",
-  "actividades": []
+  "actualizado": "2026-11-01T18:09:23.865Z",
+  "actividades": [
+    {
+      "id": "amvy59p4bie414",
+      "titulo": "Taller Bolivia",
+      "categoria": "cultural",
+      "fecha": "2026-11-06",
+      "fechaFin": "",
+      "hora": "",
+      "horaFin": "",
+      "lugar": "Auditorio 1",
+      "descripcion": "Matricula",
+      "enlace": ""
+    }
+  ]
 }
