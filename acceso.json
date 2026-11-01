@@ -1,0 +1,25 @@
+{
+  "v": 1,
+  "nota": "Acceso cifrado al panel del calendario. No contiene contraseñas ni el token en claro.",
+  "repo": {
+    "owner": "levi22-afk",
+    "repo": "tilka-web",
+    "branch": "main",
+    "ruta": "actividades.json"
+  },
+  "token": {
+    "i": "IcB5K69iHiH4q+vR",
+    "c": "k8w14YSMeSHxL9tKLni+q67yIxXF4NWENcH3EoxOYvsaypgZqfDDnTrwz24tIYtXk4kHo4y97z/5zGvAu4mu4RAJn+VpDTqScrW+nehPPOS4u4+/xO5+0OQzqCuscdRAuSl5zRp8RIwZOYxfmQ=="
+  },
+  "usuarios": [
+    {
+      "usuario": "es_levi",
+      "nombre": "Levi Chima",
+      "admin": true,
+      "s": "7eCnHpfOVyzzSGwq+58UbQ==",
+      "i": "A3sVg3lZ7Q7OiuPZ",
+      "c": "scr7lPVNFLzvvUpPgkdOWVrI3ZOKo6a1aCsw1TOC4Ib4mV7jQnbdoAmfVUFZn/ay",
+      "creado": "2026-11-01T18:04:49.261Z"
+    }
+  ]
+}
